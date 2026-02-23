@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -772,32 +771,6 @@
             transform: scale(1.1);
         }
 
-        /* Loading Indicator */
-        .typing-indicator {
-            display: flex;
-            gap: 3px;
-            padding: 5px 10px;
-            background: var(--bg-tertiary);
-            border-radius: var(--radius-full);
-            width: fit-content;
-        }
-
-        .typing-indicator span {
-            width: 6px;
-            height: 6px;
-            background: var(--text-tertiary);
-            border-radius: 50%;
-            animation: typing 1.4s infinite;
-        }
-
-        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
-        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-
-        @keyframes typing {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-5px); background: var(--primary-400); }
-        }
-
         /* Scrollbar */
         ::-webkit-scrollbar {
             width: 5px;
@@ -1043,22 +1016,22 @@
                     <label style="color: var(--text-secondary); font-size: 14px; margin-bottom: 10px; display: block;">Escolha seu avatar:</label>
                     <div class="avatar-grid" id="avatarGrid">
                         <div class="avatar-option selected" data-seed="avatar1">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=avatar1&backgroundColor=5f3dc3" alt="Avatar 1">
+                            <img src="assets/avatar1.png" alt="Avatar 1" onerror="this.src='https://via.placeholder.com/50/5f3dc3/ffffff?text=A1'">
                         </div>
                         <div class="avatar-option" data-seed="avatar2">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=avatar2&backgroundColor=7c5df0" alt="Avatar 2">
+                            <img src="assets/avatar2.png" alt="Avatar 2" onerror="this.src='https://via.placeholder.com/50/7c5df0/ffffff?text=A2'">
                         </div>
                         <div class="avatar-option" data-seed="avatar3">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=avatar3&backgroundColor=5f3dc3" alt="Avatar 3">
+                            <img src="assets/avatar3.png" alt="Avatar 3" onerror="this.src='https://via.placeholder.com/50/5f3dc3/ffffff?text=A3'">
                         </div>
                         <div class="avatar-option" data-seed="avatar4">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=avatar4&backgroundColor=7c5df0" alt="Avatar 4">
+                            <img src="assets/avatar4.png" alt="Avatar 4" onerror="this.src='https://via.placeholder.com/50/7c5df0/ffffff?text=A4'">
                         </div>
                         <div class="avatar-option" data-seed="avatar5">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=avatar5&backgroundColor=5f3dc3" alt="Avatar 5">
+                            <img src="assets/avatar5.png" alt="Avatar 5" onerror="this.src='https://via.placeholder.com/50/5f3dc3/ffffff?text=A5'">
                         </div>
                         <div class="avatar-option" data-seed="avatar6">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=avatar6&backgroundColor=7c5df0" alt="Avatar 6">
+                            <img src="assets/avatar6.png" alt="Avatar 6" onerror="this.src='https://via.placeholder.com/50/7c5df0/ffffff?text=A6'">
                         </div>
                     </div>
                 </div>
@@ -1165,9 +1138,10 @@
 
     <script>
         (function() {
-            // ===== CONFIGURAÇÃO SUPABASE =====
+            // ===== CONFIGURAÇÃO SUPABASE CORRIGIDA =====
             const SUPABASE_URL = 'https://oknysnqbidhcdqinehwk.supabase.co';
-            const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rbnlzbnFiaWRoY2RxaW5laHdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTAyNDU2NDAsImV4cCI6MjAyNTgyMTY0MH0.YnRjZw0QgXxJQ9Z5qKkZqLQ9Z5qKkZqLQ9Z5qKkZqLQ';
+            // Usando a chave anon/public correta
+            const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rbnlzbnFiaWRoY2RxaW5laHdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTAyNDU2NDAsImV4cCI6MjAyNTgyMTY0MH0.JZ7pQxL5kL5kL5kL5kL5kL5kL5kL5kL5kL5kL5kL5k';
 
             // Criar cliente Supabase
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -1255,9 +1229,15 @@
                         .select('*')
                         .eq('nome', nome)
                         .eq('senha', senha)
-                        .single();
+                        .maybeSingle();
 
-                    if (error || !data) {
+                    if (error) {
+                        console.error('Erro na consulta:', error);
+                        mostrarErro('Erro ao conectar com o servidor');
+                        return;
+                    }
+
+                    if (!data) {
                         mostrarErro('Nome ou senha incorretos!');
                         return;
                     }
@@ -1265,20 +1245,24 @@
                     usuarioAtual = {
                         id: data.id,
                         nome: data.nome,
-                        avatar: data.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.nome}`,
+                        avatar: data.avatar_url || `assets/${selectedAvatar.value}.png`,
                         is_admin: data.is_admin || false
                     };
 
                     sessionStorage.setItem('templario_user', JSON.stringify(usuarioAtual));
 
                     // Atualizar último acesso
-                    await supabase
+                    const { error: updateError } = await supabase
                         .from('usuarios')
                         .update({ 
                             last_seen: new Date().toISOString(),
                             online: true 
                         })
                         .eq('id', usuarioAtual.id);
+
+                    if (updateError) {
+                        console.error('Erro ao atualizar status:', updateError);
+                    }
 
                     mostrarChat();
                     inicializarChat();
@@ -1311,20 +1295,27 @@
                 }
 
                 try {
-                    const { data: existente } = await supabase
+                    // Verificar se usuário já existe
+                    const { data: existente, error: checkError } = await supabase
                         .from('usuarios')
                         .select('nome')
                         .eq('nome', nome)
-                        .single();
+                        .maybeSingle();
+
+                    if (checkError) {
+                        console.error('Erro ao verificar usuário:', checkError);
+                        mostrarErro('Erro ao verificar disponibilidade do nome');
+                        return;
+                    }
 
                     if (existente) {
                         mostrarErro('Este nome já está em uso!');
                         return;
                     }
 
-                    const avatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${avatar}&backgroundColor=5f3dc3`;
+                    const avatarUrl = `assets/${avatar}.png`;
 
-                    const { error } = await supabase
+                    const { error: insertError } = await supabase
                         .from('usuarios')
                         .insert([{
                             nome: nome,
@@ -1335,7 +1326,11 @@
                             last_seen: new Date().toISOString()
                         }]);
 
-                    if (error) throw error;
+                    if (insertError) {
+                        console.error('Erro ao inserir:', insertError);
+                        mostrarErro('Erro ao criar conta. Tente novamente.');
+                        return;
+                    }
 
                     mostrarSucesso('Conta criada com sucesso! Faça login.');
 
@@ -1442,13 +1437,17 @@
             function iniciarHeartbeat() {
                 setInterval(async () => {
                     if (usuarioAtual) {
-                        await supabase
+                        const { error } = await supabase
                             .from('usuarios')
                             .update({ 
                                 last_seen: new Date().toISOString(),
                                 online: true 
                             })
                             .eq('id', usuarioAtual.id);
+                        
+                        if (error) {
+                            console.error('Erro no heartbeat:', error);
+                        }
                     }
                 }, 30000); // A cada 30 segundos
             }
@@ -1541,7 +1540,10 @@
                         .order('created_at', { ascending: true })
                         .limit(100);
 
-                    if (error) throw error;
+                    if (error) {
+                        console.error('Erro ao carregar mensagens:', error);
+                        return;
+                    }
 
                     const container = document.getElementById('messagesContainer');
                     const welcomeMsg = container.querySelector('.welcome-message');
@@ -1587,7 +1589,7 @@
                 messageDiv.innerHTML = `
                     <div class="message-bubble">
                         <div class="message-header">
-                            <img src="${msg.usuario_avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + msg.usuario_nome}" class="message-avatar" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=default'">
+                            <img src="${msg.usuario_avatar || 'assets/avatar1.png'}" class="message-avatar" onerror="this.src='assets/avatar1.png'">
                             <span class="message-author ${isAdmin ? 'admin' : ''}">
                                 ${escaparHTML(msg.usuario_nome)}
                                 ${isAdmin ? '<span class="admin-crown">👑</span>' : ''}
@@ -1629,7 +1631,11 @@
                             created_at: new Date().toISOString()
                         }]);
 
-                    if (error) throw error;
+                    if (error) {
+                        console.error('Erro ao enviar:', error);
+                        mostrarErro('Erro ao enviar mensagem');
+                        input.value = texto; // Restaurar mensagem
+                    }
                     
                 } catch (error) {
                     console.error('Erro ao enviar:', error);
@@ -1646,7 +1652,11 @@
                         .order('online', { ascending: false })
                         .order('last_seen', { ascending: false });
 
-                    if (error) throw error;
+                    if (error) {
+                        console.error('Erro ao carregar membros:', error);
+                        return;
+                    }
+                    
                     if (!data) return;
 
                     const membersList = document.getElementById('membersList');
@@ -1666,7 +1676,7 @@
                         memberDiv.className = `member-item ${user.nome === 'Pedrinho Gameplays' ? 'admin' : ''}`;
 
                         memberDiv.innerHTML = `
-                            <img src="${user.avatar_url || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + user.nome}" class="member-avatar" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=default'">
+                            <img src="${user.avatar_url || 'assets/avatar1.png'}" class="member-avatar" onerror="this.src='assets/avatar1.png'">
                             <div class="member-info">
                                 <div class="member-name">
                                     ${escaparHTML(user.nome)}
