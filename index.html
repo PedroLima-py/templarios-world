@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Templários World - Chat</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="chat-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-shield-alt"></i> Templários</h2>
+            </div>
+
+            <!-- Perfil do usuário -->
+            <div class="user-profile" id="userProfile">
+                <img src="" alt="Avatar" class="profile-avatar" id="profileAvatar">
+                <div class="profile-info">
+                    <h3 id="profileName">Carregando...</h3>
+                    <span class="user-status" id="userStatus">
+                        <i class="fas fa-circle"></i> Online
+                    </span>
+                </div>
+            </div>
+
+            <!-- Lista de membros online -->
+            <div class="online-members">
+                <h4><i class="fas fa-users"></i> Membros Online <span id="onlineCount">0</span></h4>
+                <div class="members-list" id="membersList">
+                    <!-- Membros serão inseridos aqui -->
+                </div>
+            </div>
+
+            <!-- Botão de logout -->
+            <button class="logout-btn" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Sair</span>
+            </button>
+        </div>
+
+        <!-- Área principal do chat -->
+        <div class="chat-main">
+            <div class="chat-header">
+                <div class="chat-header-info">
+                    <h2><i class="fas fa-comment-dots"></i> Chat Geral</h2>
+                    <span class="chat-status">Todos podem ver</span>
+                </div>
+                <div class="header-actions">
+                    <button class="emoji-toggle" id="emojiToggle">
+                        <i class="far fa-smile"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mensagens -->
+            <div class="messages-area" id="messagesArea">
+                <div class="message welcome-message">
+                    <div class="message-content system">
+                        <i class="fas fa-shield-alt"></i>
+                        <p>Bem-vindo ao Templo, guerreiro! ⚔️</p>
+                        <span>Que a honra guie suas palavras</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Área de digitação -->
+            <div class="input-area">
+                <button class="emoji-btn" id="emojiBtn">
+                    <i class="far fa-laugh"></i>
+                </button>
+                <input 
+                    type="text" 
+                    id="messageInput" 
+                    placeholder="Digite sua mensagem, irmão..."
+                    autocomplete="off"
+                >
+                <button class="send-btn" id="sendBtn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+
+            <!-- Emoji picker -->
+            <div class="emoji-picker" id="emojiPicker">
+                <div class="emoji-categories">
+                    <button class="emoji-cat active" data-cat="smileys">😊</button>
+                    <button class="emoji-cat" data-cat="gestures">👋</button>
+                    <button class="emoji-cat" data-cat="hearts">❤️</button>
+                </div>
+                <div class="emoji-grid" id="emojiGrid">
+                    <!-- Emojis serão inseridos aqui -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+</body>
+</html>
