@@ -1202,26 +1202,26 @@
 
                 <label class="input-label">Escolha seu avatar</label>
                 <div class="avatar-grid" id="avatarGrid">
-                    <div class="avatar-option selected" data-seed="Cavaleiro1">
-                        <img src="https://api.dicebear.com/7.x/avataaas/svg?seed=Cavaleiro1&backgroundColor=8b5cf6">
+                    <div class="avatar-option selected" data-seed="avatar1">
+                        <img src="assets/avatar1.png" alt="Avatar 1">
                     </div>
-                    <div class="avatar-option" data-seed="Cavaleiro2">
-                        <img src="https://api.dicebear.com/7.x/avataaas/svg?seed=Cavaleiro2&backgroundColor=6d28d9">
+                    <div class="avatar-option" data-seed="avatar2">
+                        <img src="assets/avatar2.png" alt="Avatar 2">
                     </div>
-                    <div class="avatar-option" data-seed="Cavaleiro3">
-                        <img src="https://api.dicebear.com/7.x/avataaas/svg?seed=Cavaleiro3&backgroundColor=5f3dc3">
+                    <div class="avatar-option" data-seed="avatar3">
+                        <img src="assets/avatar3.png" alt="Avatar 3">
                     </div>
-                    <div class="avatar-option" data-seed="Cavaleiro4">
-                        <img src="https://api.dicebear.com/7.x/avataaas/svg?seed=Cavaleiro4&backgroundColor=7c5df0">
+                    <div class="avatar-option" data-seed="avatar4">
+                        <img src="assets/avatar4.png" alt="Avatar 4">
                     </div>
-                    <div class="avatar-option" data-seed="Cavaleiro5">
-                        <img src="https://api.dicebear.com/7.x/avataaas/svg?seed=Cavaleiro5&backgroundColor=9f8af5">
+                    <div class="avatar-option" data-seed="avatar5">
+                        <img src="assets/avatar5.png" alt="Avatar 5">
                     </div>
-                    <div class="avatar-option" data-seed="Cavaleiro6">
-                        <img src="https://api.dicebear.com/7.x/avataaas/svg?seed=Cavaleiro6&backgroundColor=c1b5fa">
+                    <div class="avatar-option" data-seed="avatar6">
+                        <img src="assets/avatar6.png" alt="Avatar 6">
                     </div>
                 </div>
-                <input type="hidden" id="selectedAvatar" value="Cavaleiro1">
+                <input type="hidden" id="selectedAvatar" value="avatar1">
 
                 <button class="btn-primary" onclick="criarConta()">
                     <i class="fas fa-user-plus"></i>
@@ -1357,7 +1357,6 @@
 
             // ===== UTILITÁRIOS =====
             function mostrarNotificacao(mensagem, tipo = 'info') {
-                // Pode implementar um toast bonito depois
                 alert(mensagem);
             }
 
@@ -1493,7 +1492,8 @@
                         return;
                     }
 
-                    const avatarUrl = `https://api.dicebear.com/7.x/avataaas/svg?seed=${avatar}&backgroundColor=8b5cf6`;
+                    // Agora usa o caminho local do asset
+                    const avatarUrl = `assets/${avatar}.png`;
 
                     const { data, error } = await supabase
                         .from('usuarios')
