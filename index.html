@@ -1624,26 +1624,12 @@
             // ===== VARIÁVEIS GLOBAIS =====
             let usuarioAtual = null;
             let mensagensSubscription = null;
-            let ultimaMensagemId = null;
             let reconnectTimeout = null;
 
             // ===== UTILITÁRIOS =====
             function mostrarNotificacao(mensagem, tipo = 'info') {
-                const toast = document.createElement('div');
-                toast.className = `toast-notification ${tipo}`;
-                toast.innerHTML = `
-                    <div class="toast-content">
-                        <i class="fas ${tipo === 'success' ? 'fa-check-circle' : tipo === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
-                        <span>${mensagem}</span>
-                    </div>
-                `;
-                
-                document.body.appendChild(toast);
-                
-                setTimeout(() => {
-                    toast.style.animation = 'slideInLeft 0.3s reverse';
-                    setTimeout(() => toast.remove(), 300);
-                }, 3000);
+                // Função mantida mas não usada para notificações de conexão
+                console.log(`[${tipo}] ${mensagem}`);
             }
 
             function escaparHTML(texto) {
@@ -1704,7 +1690,7 @@
                 const senha = document.getElementById('loginSenha').value;
 
                 if (!nome || !senha) {
-                    mostrarNotificacao('Preencha todos os campos!', 'error');
+                    alert('Preencha todos os campos!');
                     return;
                 }
 
@@ -1717,7 +1703,7 @@
                         .single();
 
                     if (error || !data) {
-                        mostrarNotificacao('Nome ou senha incorretos!', 'error');
+                        alert('Nome ou senha incorretos!');
                         return;
                     }
 
@@ -1739,7 +1725,7 @@
                     inicializarChat();
                 } catch (error) {
                     console.error('Erro no login:', error);
-                    mostrarNotificacao('Erro ao fazer login. Tente novamente.', 'error');
+                    alert('Erro ao fazer login. Tente novamente.');
                 }
             };
 
@@ -1751,17 +1737,17 @@
                 const avatar = selectedAvatar.value;
 
                 if (!nome || !senha || !confirmar) {
-                    mostrarNotificacao('Preencha todos os campos!', 'error');
+                    alert('Preencha todos os campos!');
                     return;
                 }
 
                 if (senha.length < 4) {
-                    mostrarNotificacao('A senha deve ter pelo menos 4 caracteres!', 'error');
+                    alert('A senha deve ter pelo menos 4 caracteres!');
                     return;
                 }
 
                 if (senha !== confirmar) {
-                    mostrarNotificacao('As senhas não coincidem!', 'error');
+                    alert('As senhas não coincidem!');
                     return;
                 }
 
@@ -1773,7 +1759,7 @@
                         .single();
 
                     if (existente) {
-                        mostrarNotificacao('Este nome já está em uso!', 'error');
+                        alert('Este nome já está em uso!');
                         return;
                     }
 
@@ -1792,14 +1778,14 @@
 
                     if (error) throw error;
 
-                    mostrarNotificacao('Conta criada com sucesso! Faça login.', 'success');
+                    alert('Conta criada com sucesso! Faça login.');
 
                     loginTabBtn.click();
                     document.getElementById('loginNome').value = nome;
                     document.getElementById('loginSenha').value = '';
                 } catch (error) {
                     console.error('Erro no registro:', error);
-                    mostrarNotificacao('Erro ao criar conta. Tente novamente.', 'error');
+                    alert('Erro ao criar conta. Tente novamente.');
                 }
             };
 
@@ -1831,7 +1817,7 @@
                 // Carregar membros
                 carregarMembros();
 
-                // Configurar tempo real (AGORA VERSÃO CORRIGIDA)
+                // Configurar tempo real (VERSÃO SEM NOTIFICAÇÃO)
                 setupRealtime();
 
                 // Configurar eventos
@@ -1849,48 +1835,43 @@
                 // Heartbeat para manter conexão
                 setInterval(() => {
                     if (mensagensSubscription) {
-                        console.log('💓 Heartbeat - mantendo conexão');
+                        console.log('💓 Mantendo conexão ativa');
                     }
                 }, 25000);
             }
 
-            // ===== CORREÇÃO CRÍTICA DO TEMPO REAL =====
+            // ===== TEMPO REAL SEM NOTIFICAÇÃO =====
             function setupRealtime() {
-                console.log('🎯 Configurando tempo real (VERSÃO CORRIGIDA)...');
+                console.log('🎯 Configurando tempo real...');
                 
                 // Cancelar inscrição anterior se existir
                 if (mensagensSubscription) {
                     supabase.removeChannel(mensagensSubscription);
                 }
                 
-                // IMPORTANTE: Usar o nome CORRETO do canal e configuração
+                // Configurar canal Realtime
                 mensagensSubscription = supabase
-                    .channel('mensagens-realtime') // Nome diferente para garantir
+                    .channel('mensagens-realtime')
                     .on(
                         'postgres_changes',
                         { 
                             event: 'INSERT', 
                             schema: 'public', 
-                            table: 'mensagens' // Nome da tabela em minúsculas
+                            table: 'mensagens'
                         },
                         (payload) => {
-                            console.log('📨 NOVA MENSAGEM RECEBIDA:', payload);
+                            console.log('📨 Nova mensagem recebida');
                             
                             // Adicionar a mensagem para TODOS os usuários
                             adicionarMensagem(payload.new);
                             scrollToBottom();
                         }
                     )
-                    .subscribe((status, err) => {
-                        console.log('📡 Status da inscrição:', status);
-                        
-                        if (status === 'SUBSCRIBED') {
-                            console.log('✅ CONECTADO AO TEMPO REAL!');
-                            mostrarNotificacao('Chat em tempo real ativo!', 'success');
-                        }
+                    .subscribe((status) => {
+                        console.log('📡 Status:', status);
                         
                         if (status === 'CHANNEL_ERROR') {
-                            console.error('❌ Erro no canal:', err);
+                            console.error('❌ Erro no canal');
                             // Tentar reconectar após 5 segundos
                             if (reconnectTimeout) clearTimeout(reconnectTimeout);
                             reconnectTimeout = setTimeout(() => {
@@ -1990,11 +1971,11 @@
                 }
             }
 
-            // Função de adicionar mensagem corrigida
+            // Função de adicionar mensagem
             function adicionarMensagem(msg) {
                 const container = document.getElementById('messagesContainer');
                 
-                // Verificar duplicatas (mais robusto)
+                // Verificar duplicatas
                 const mensagensExistentes = container.querySelectorAll('.message');
                 for (let i = mensagensExistentes.length - 1; i >= 0; i--) {
                     const msgExistente = mensagensExistentes[i];
@@ -2043,7 +2024,7 @@
                 }
             }
 
-            // Função de enviar mensagem corrigida
+            // Função de enviar mensagem
             async function enviarMensagem() {
                 const input = document.getElementById('messageInput');
                 const texto = input.value.trim();
@@ -2054,29 +2035,26 @@
                 input.value = '';
 
                 try {
-                    // Enviar para o banco
-                    const { data, error } = await supabase
+                    const { error } = await supabase
                         .from('mensagens')
                         .insert([{
                             usuario_id: usuarioAtual.id,
                             usuario_nome: usuarioAtual.nome,
                             usuario_avatar: usuarioAtual.avatar,
                             mensagem: texto
-                        }])
-                        .select();
+                        }]);
 
                     if (error) {
                         console.error('Erro no envio:', error);
-                        mostrarNotificacao('Erro ao enviar mensagem', 'error');
+                        alert('Erro ao enviar mensagem');
                         return;
                     }
                     
-                    // A mensagem será recebida via Realtime
-                    console.log('✅ Mensagem enviada com sucesso');
+                    console.log('✅ Mensagem enviada');
                     
                 } catch (error) {
                     console.error('Erro no envio:', error);
-                    mostrarNotificacao('Erro ao enviar mensagem', 'error');
+                    alert('Erro ao enviar mensagem');
                 }
             }
 
