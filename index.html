@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -60,11 +61,8 @@
             --radius-full: 9999px;
         }
 
-        * {
-            font-family: 'Inter', sans-serif;
-        }
-
         body {
+            font-family: 'Inter', sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
             height: 100vh;
@@ -83,6 +81,12 @@
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
         }
 
         /* ===== TELA DE LOGIN ===== */
@@ -155,6 +159,7 @@
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
+            transition: var(--transition-base);
         }
 
         .tab-btn.active {
@@ -168,6 +173,7 @@
 
         .login-form.active {
             display: block;
+            animation: fadeIn 0.3s;
         }
 
         .input-group {
@@ -195,11 +201,13 @@
             border-radius: var(--radius-lg);
             color: var(--text-primary);
             font-size: 14px;
+            transition: var(--transition-base);
         }
 
         .input-wrapper input:focus {
             outline: none;
             border-color: var(--primary-400);
+            box-shadow: 0 0 0 3px rgba(124, 93, 240, 0.2);
         }
 
         .avatar-grid {
@@ -216,11 +224,18 @@
             border-radius: var(--radius-lg);
             padding: 8px;
             cursor: pointer;
+            transition: var(--transition-base);
+        }
+
+        .avatar-option:hover {
+            transform: scale(1.05);
+            border-color: var(--primary-400);
         }
 
         .avatar-option.selected {
             border-color: var(--primary-400);
             background: rgba(124, 93, 240, 0.1);
+            box-shadow: 0 0 15px var(--accent-glow);
         }
 
         .avatar-option img {
@@ -243,6 +258,16 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            transition: var(--transition-base);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--accent-glow);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
         }
 
         /* ===== TELA DO CHAT ===== */
@@ -253,7 +278,7 @@
             overflow: hidden;
         }
 
-        /* Sidebar - DESKTOP */
+        /* Sidebar */
         .chat-sidebar {
             width: 280px;
             background: var(--bg-secondary);
@@ -261,6 +286,7 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
+            overflow-y: auto;
         }
 
         .sidebar-header {
@@ -284,6 +310,12 @@
             display: flex;
             align-items: center;
             gap: 15px;
+            border: 1px solid var(--border-medium);
+            transition: var(--transition-base);
+        }
+
+        .user-profile-card:hover {
+            border-color: var(--primary-400);
         }
 
         .profile-avatar {
@@ -291,6 +323,7 @@
             height: 50px;
             border-radius: 50%;
             border: 2px solid var(--primary-400);
+            object-fit: cover;
         }
 
         .profile-info h3 {
@@ -327,6 +360,7 @@
             margin-bottom: 15px;
             color: var(--text-tertiary);
             font-size: 13px;
+            padding: 0 5px;
         }
 
         .online-count {
@@ -334,6 +368,7 @@
             padding: 3px 8px;
             border-radius: var(--radius-full);
             color: var(--success);
+            font-weight: 600;
         }
 
         .members-list {
@@ -350,16 +385,24 @@
             background: var(--bg-tertiary);
             border: 1px solid var(--border-medium);
             border-radius: var(--radius-lg);
+            transition: var(--transition-base);
+        }
+
+        .member-item:hover {
+            border-color: var(--primary-400);
+            transform: translateX(5px);
         }
 
         .member-item.admin {
             border-color: var(--accent-gold);
+            background: linear-gradient(90deg, var(--bg-tertiary), rgba(255, 179, 71, 0.1));
         }
 
         .member-avatar {
             width: 35px;
             height: 35px;
             border-radius: 50%;
+            object-fit: cover;
         }
 
         .member-info {
@@ -380,6 +423,7 @@
             font-size: 9px;
             padding: 2px 5px;
             border-radius: var(--radius-full);
+            font-weight: 700;
         }
 
         .member-status {
@@ -398,6 +442,8 @@
 
         .status-dot.online {
             background: var(--success);
+            box-shadow: 0 0 10px var(--success);
+            animation: pulse 2s infinite;
         }
 
         .status-dot.offline {
@@ -416,6 +462,12 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            transition: var(--transition-base);
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: var(--error);
         }
 
         /* Chat Main */
@@ -425,6 +477,7 @@
             flex-direction: column;
             height: 100vh;
             overflow: hidden;
+            background: var(--bg-primary);
         }
 
         .chat-header {
@@ -464,6 +517,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: var(--transition-base);
+        }
+
+        .action-btn:hover {
+            border-color: var(--primary-400);
+            color: var(--primary-400);
+            transform: rotate(15deg);
         }
 
         /* Messages Area */
@@ -474,11 +534,12 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
+            scroll-behavior: smooth;
         }
 
         .message {
             display: flex;
-            animation: slideIn 0.3s;
+            animation: slideIn 0.3s ease-out;
         }
 
         .message.sent {
@@ -496,11 +557,13 @@
             background: var(--bg-tertiary);
             border: 1px solid var(--border-medium);
             word-break: break-word;
+            transition: var(--transition-base);
         }
 
         .message.sent .message-bubble {
             background: linear-gradient(135deg, var(--primary-600), var(--primary-500));
             border: none;
+            box-shadow: 0 3px 12px var(--accent-glow);
         }
 
         .message-header {
@@ -515,6 +578,7 @@
             width: 20px;
             height: 20px;
             border-radius: 50%;
+            object-fit: cover;
         }
 
         .message-author {
@@ -580,6 +644,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: var(--transition-base);
+            flex-shrink: 0;
+        }
+
+        .emoji-btn:hover {
+            border-color: var(--primary-400);
+            color: var(--primary-400);
         }
 
         .message-input {
@@ -590,11 +661,18 @@
             border-radius: var(--radius-full);
             color: var(--text-primary);
             font-size: 14px;
+            transition: var(--transition-base);
+            min-width: 0;
         }
 
         .message-input:focus {
             outline: none;
             border-color: var(--primary-400);
+            box-shadow: 0 0 0 3px rgba(124, 93, 240, 0.2);
+        }
+
+        .message-input::placeholder {
+            color: var(--text-muted);
         }
 
         .send-btn {
@@ -609,6 +687,17 @@
             align-items: center;
             justify-content: center;
             box-shadow: 0 3px 12px var(--accent-glow);
+            transition: var(--transition-base);
+            flex-shrink: 0;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 20px var(--accent-glow);
+        }
+
+        .send-btn:active {
+            transform: scale(0.95);
         }
 
         /* Emoji Picker */
@@ -648,11 +737,17 @@
             color: var(--text-tertiary);
             font-size: 16px;
             cursor: pointer;
+            transition: var(--transition-base);
+        }
+
+        .emoji-cat:hover {
+            border-color: var(--primary-400);
         }
 
         .emoji-cat.active {
             background: var(--primary-400);
             color: white;
+            border-color: var(--primary-400);
         }
 
         .emoji-grid {
@@ -669,10 +764,38 @@
             text-align: center;
             cursor: pointer;
             border-radius: var(--radius-md);
+            transition: var(--transition-base);
         }
 
         .emoji-grid span:hover {
             background: var(--primary-400);
+            transform: scale(1.1);
+        }
+
+        /* Loading Indicator */
+        .typing-indicator {
+            display: flex;
+            gap: 3px;
+            padding: 5px 10px;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-full);
+            width: fit-content;
+        }
+
+        .typing-indicator span {
+            width: 6px;
+            height: 6px;
+            background: var(--text-tertiary);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); background: var(--primary-400); }
         }
 
         /* Scrollbar */
@@ -689,6 +812,10 @@
             border-radius: var(--radius-full);
         }
 
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-300);
+        }
+
         /* ===== MOBILE OTIMIZADO ===== */
         @media (max-width: 768px) {
             .chat-screen {
@@ -698,10 +825,9 @@
             .chat-sidebar {
                 width: 100%;
                 height: auto;
-                max-height: 35vh;
+                max-height: 40vh;
                 border-right: none;
                 border-bottom: 1px solid var(--border-medium);
-                overflow-y: auto;
             }
 
             .sidebar-header {
@@ -731,12 +857,10 @@
                 flex-direction: row;
                 flex-wrap: wrap;
                 gap: 6px;
-                margin-bottom: 10px;
             }
 
             .member-item {
-                flex: 0 0 auto;
-                width: calc(50% - 3px);
+                flex: 0 0 calc(50% - 3px);
                 padding: 8px;
             }
 
@@ -755,7 +879,7 @@
             }
 
             .chat-main {
-                height: 65vh;
+                height: 60vh;
             }
 
             .chat-header {
@@ -764,6 +888,10 @@
 
             .chat-title h2 {
                 font-size: 16px;
+            }
+
+            .chat-badge {
+                font-size: 10px;
             }
 
             .messages-container {
@@ -801,10 +929,50 @@
             }
         }
 
-        /* Ajuste para telas muito pequenas */
+        @media (max-width: 480px) {
+            .member-item {
+                flex: 0 0 100%;
+            }
+            
+            .chat-sidebar {
+                max-height: 35vh;
+            }
+            
+            .chat-main {
+                height: 65vh;
+            }
+            
+            .message-bubble {
+                max-width: 90%;
+            }
+        }
+
         @media (max-width: 380px) {
             .member-item {
                 width: 100%;
+            }
+            
+            .input-area {
+                gap: 5px;
+            }
+            
+            .emoji-btn, .send-btn {
+                width: 38px;
+                height: 38px;
+            }
+        }
+
+        @media (orientation: landscape) and (max-height: 500px) {
+            .chat-sidebar {
+                max-height: 80vh;
+            }
+            
+            .chat-main {
+                height: 80vh;
+            }
+            
+            .member-item {
+                flex: 0 0 calc(33.333% - 4px);
             }
         }
     </style>
@@ -872,25 +1040,25 @@
                 </div>
 
                 <div class="avatar-selection">
-                    <label style="color: var(--text-secondary); font-size: 14px;">Escolha seu avatar:</label>
+                    <label style="color: var(--text-secondary); font-size: 14px; margin-bottom: 10px; display: block;">Escolha seu avatar:</label>
                     <div class="avatar-grid" id="avatarGrid">
                         <div class="avatar-option selected" data-seed="avatar1">
-                            <img src="assets/avatar1.png" alt="Avatar 1">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=avatar1&backgroundColor=5f3dc3" alt="Avatar 1">
                         </div>
                         <div class="avatar-option" data-seed="avatar2">
-                            <img src="assets/avatar2.png" alt="Avatar 2">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=avatar2&backgroundColor=7c5df0" alt="Avatar 2">
                         </div>
                         <div class="avatar-option" data-seed="avatar3">
-                            <img src="assets/avatar3.png" alt="Avatar 3">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=avatar3&backgroundColor=5f3dc3" alt="Avatar 3">
                         </div>
                         <div class="avatar-option" data-seed="avatar4">
-                            <img src="assets/avatar4.png" alt="Avatar 4">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=avatar4&backgroundColor=7c5df0" alt="Avatar 4">
                         </div>
                         <div class="avatar-option" data-seed="avatar5">
-                            <img src="assets/avatar5.png" alt="Avatar 5">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=avatar5&backgroundColor=5f3dc3" alt="Avatar 5">
                         </div>
                         <div class="avatar-option" data-seed="avatar6">
-                            <img src="assets/avatar6.png" alt="Avatar 6">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=avatar6&backgroundColor=7c5df0" alt="Avatar 6">
                         </div>
                     </div>
                 </div>
@@ -999,7 +1167,7 @@
         (function() {
             // ===== CONFIGURAÇÃO SUPABASE =====
             const SUPABASE_URL = 'https://oknysnqbidhcdqinehwk.supabase.co';
-            const SUPABASE_KEY = 'sb_publishable_UrxALLkgzzTBDNpQxSypBQ_7dJMQpsj';
+            const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rbnlzbnFiaWRoY2RxaW5laHdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTAyNDU2NDAsImV4cCI6MjAyNTgyMTY0MH0.YnRjZw0QgXxJQ9Z5qKkZqLQ9Z5qKkZqLQ9Z5qKkZqLQ';
 
             // Criar cliente Supabase
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -1007,12 +1175,22 @@
             // ===== VARIÁVEIS GLOBAIS =====
             let usuarioAtual = null;
             let mensagensSubscription = null;
+            let membrosSubscription = null;
+            let ultimaMensagemId = null;
 
             // ===== UTILITÁRIOS =====
             function escaparHTML(texto) {
                 const div = document.createElement('div');
                 div.textContent = texto;
                 return div.innerHTML;
+            }
+
+            function mostrarErro(mensagem) {
+                alert('❌ ' + mensagem);
+            }
+
+            function mostrarSucesso(mensagem) {
+                alert('✅ ' + mensagem);
             }
 
             // ===== SISTEMA DE LOGIN =====
@@ -1067,7 +1245,7 @@
                 const senha = document.getElementById('loginSenha').value;
 
                 if (!nome || !senha) {
-                    alert('Preencha todos os campos!');
+                    mostrarErro('Preencha todos os campos!');
                     return;
                 }
 
@@ -1080,29 +1258,33 @@
                         .single();
 
                     if (error || !data) {
-                        alert('Nome ou senha incorretos!');
+                        mostrarErro('Nome ou senha incorretos!');
                         return;
                     }
 
                     usuarioAtual = {
                         id: data.id,
                         nome: data.nome,
-                        avatar: data.avatar_url,
-                        is_admin: data.is_admin || nome === 'Pedrinho Gameplays'
+                        avatar: data.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.nome}`,
+                        is_admin: data.is_admin || false
                     };
 
                     sessionStorage.setItem('templario_user', JSON.stringify(usuarioAtual));
 
+                    // Atualizar último acesso
                     await supabase
                         .from('usuarios')
-                        .update({ last_seen: new Date().toISOString() })
+                        .update({ 
+                            last_seen: new Date().toISOString(),
+                            online: true 
+                        })
                         .eq('id', usuarioAtual.id);
 
                     mostrarChat();
                     inicializarChat();
                 } catch (error) {
                     console.error('Erro no login:', error);
-                    alert('Erro ao fazer login. Tente novamente.');
+                    mostrarErro('Erro ao fazer login. Tente novamente.');
                 }
             };
 
@@ -1114,17 +1296,17 @@
                 const avatar = selectedAvatar.value;
 
                 if (!nome || !senha || !confirmar) {
-                    alert('Preencha todos os campos!');
+                    mostrarErro('Preencha todos os campos!');
                     return;
                 }
 
                 if (senha.length < 4) {
-                    alert('A senha deve ter pelo menos 4 caracteres!');
+                    mostrarErro('A senha deve ter pelo menos 4 caracteres!');
                     return;
                 }
 
                 if (senha !== confirmar) {
-                    alert('As senhas não coincidem!');
+                    mostrarErro('As senhas não coincidem!');
                     return;
                 }
 
@@ -1136,11 +1318,11 @@
                         .single();
 
                     if (existente) {
-                        alert('Este nome já está em uso!');
+                        mostrarErro('Este nome já está em uso!');
                         return;
                     }
 
-                    const avatarUrl = `assets/${avatar}.png`;
+                    const avatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${avatar}&backgroundColor=5f3dc3`;
 
                     const { error } = await supabase
                         .from('usuarios')
@@ -1148,19 +1330,21 @@
                             nome: nome,
                             senha: senha,
                             avatar_url: avatarUrl,
-                            is_admin: false
+                            is_admin: false,
+                            online: false,
+                            last_seen: new Date().toISOString()
                         }]);
 
                     if (error) throw error;
 
-                    alert('Conta criada com sucesso! Faça login.');
+                    mostrarSucesso('Conta criada com sucesso! Faça login.');
 
                     loginTabBtn.click();
                     document.getElementById('loginNome').value = nome;
                     document.getElementById('loginSenha').value = '';
                 } catch (error) {
                     console.error('Erro no registro:', error);
-                    alert('Erro ao criar conta. Tente novamente.');
+                    mostrarErro('Erro ao criar conta. Tente novamente.');
                 }
             };
 
@@ -1170,7 +1354,7 @@
                 chatScreen.classList.remove('hidden');
             }
 
-            function inicializarChat() {
+            async function inicializarChat() {
                 // Atualizar perfil
                 document.getElementById('profileName').innerHTML = usuarioAtual.nome;
                 if (usuarioAtual.is_admin) {
@@ -1179,10 +1363,10 @@
                 document.getElementById('profileAvatar').src = usuarioAtual.avatar;
 
                 // Carregar mensagens
-                carregarMensagens();
+                await carregarMensagens();
 
                 // Carregar membros
-                carregarMembros();
+                await carregarMembros();
 
                 // Configurar tempo real
                 setupRealtime();
@@ -1193,24 +1377,25 @@
                 // Configurar emojis
                 configurarEmojis();
 
-                // Atualizar status online
-                atualizarStatusOnline(true);
-
-                // Atualizar membros periodicamente
-                setInterval(carregarMembros, 10000);
+                // Heartbeat para manter online
+                iniciarHeartbeat();
             }
 
             // ===== TEMPO REAL CORRIGIDO =====
             function setupRealtime() {
                 console.log('🎯 Configurando tempo real...');
                 
+                // Remover subscriptions anteriores
                 if (mensagensSubscription) {
                     supabase.removeChannel(mensagensSubscription);
+                }
+                if (membrosSubscription) {
+                    supabase.removeChannel(membrosSubscription);
                 }
                 
                 // Inscrição para novas mensagens
                 mensagensSubscription = supabase
-                    .channel('mensagens')
+                    .channel('mensagens-channel')
                     .on(
                         'postgres_changes',
                         { 
@@ -1219,29 +1404,80 @@
                             table: 'mensagens' 
                         },
                         (payload) => {
-                            console.log('📨 Nova mensagem:', payload.new);
-                            adicionarMensagem(payload.new);
-                            scrollToBottom();
+                            console.log('📨 Nova mensagem recebida:', payload.new);
+                            
+                            // Evitar duplicatas
+                            if (payload.new.id !== ultimaMensagemId) {
+                                ultimaMensagemId = payload.new.id;
+                                adicionarMensagem(payload.new);
+                                scrollToBottom();
+                            }
                         }
                     )
                     .subscribe((status) => {
-                        console.log('📡 Status Realtime:', status);
+                        console.log('📡 Status Realtime Mensagens:', status);
                     });
+
+                // Inscrição para atualizações de membros
+                membrosSubscription = supabase
+                    .channel('membros-channel')
+                    .on(
+                        'postgres_changes',
+                        { 
+                            event: '*', 
+                            schema: 'public', 
+                            table: 'usuarios' 
+                        },
+                        (payload) => {
+                            console.log('👥 Atualização de membros:', payload);
+                            carregarMembros();
+                        }
+                    )
+                    .subscribe((status) => {
+                        console.log('📡 Status Realtime Membros:', status);
+                    });
+            }
+
+            // Heartbeat para manter online
+            function iniciarHeartbeat() {
+                setInterval(async () => {
+                    if (usuarioAtual) {
+                        await supabase
+                            .from('usuarios')
+                            .update({ 
+                                last_seen: new Date().toISOString(),
+                                online: true 
+                            })
+                            .eq('id', usuarioAtual.id);
+                    }
+                }, 30000); // A cada 30 segundos
             }
 
             // Configurar eventos
             function configurarEventos() {
                 document.getElementById('sendBtn').addEventListener('click', enviarMensagem);
                 document.getElementById('messageInput').addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') enviarMensagem();
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        enviarMensagem();
+                    }
                 });
 
                 document.getElementById('logoutBtn').addEventListener('click', async () => {
-                    await atualizarStatusOnline(false);
+                    if (usuarioAtual) {
+                        await supabase
+                            .from('usuarios')
+                            .update({ 
+                                online: false,
+                                last_seen: new Date().toISOString()
+                            })
+                            .eq('id', usuarioAtual.id);
+                    }
                     sessionStorage.removeItem('templario_user');
                     window.location.reload();
                 });
 
+                // Emoji picker
                 const emojiToggle = document.getElementById('emojiToggleBtn');
                 const emojiBtn = document.getElementById('emojiBtn');
                 const emojiPicker = document.getElementById('emojiPicker');
@@ -1272,9 +1508,9 @@
 
             function configurarEmojis() {
                 const emojiData = {
-                    smileys: ['😊', '😂', '🥰', '😎', '🤔', '😴', '🥳', '😱', '🤗', '😡', '😭', '🤯', '🥺', '😈', '👻', '💀'],
-                    gestures: ['👋', '✌️', '🤞', '👍', '👎', '👊', '✊', '🤛', '🤜', '🤝', '👏', '🙌', '👐', '🤲', '🙏', '💪'],
-                    hearts: ['❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '💔', '❤️‍🔥', '❤️‍🩹', '💕', '💞', '💓', '💗']
+                    smileys: ['😊', '😂', '🥰', '😎', '🤔', '😴', '🥳', '😱', '🤗', '😡', '😭', '🤯', '🥺', '😈', '👻', '💀', '👽', '🤖', '🎃', '😺'],
+                    gestures: ['👋', '✌️', '🤞', '👍', '👎', '👊', '✊', '🤛', '🤜', '🤝', '👏', '🙌', '👐', '🤲', '🙏', '💪', '🤳', '👀', '👂', '👃'],
+                    hearts: ['❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '💔', '❤️‍🔥', '❤️‍🩹', '💕', '💞', '💓', '💗', '💖', '💘', '💝', '💟']
                 };
 
                 window.carregarEmojis = function(categoria = 'smileys') {
@@ -1285,9 +1521,10 @@
                         const span = document.createElement('span');
                         span.textContent = emoji;
                         span.onclick = () => {
-                            document.getElementById('messageInput').value += emoji;
+                            const input = document.getElementById('messageInput');
+                            input.value += emoji;
+                            input.focus();
                             document.getElementById('emojiPicker').classList.remove('show');
-                            document.getElementById('messageInput').focus();
                         };
                         grid.appendChild(span);
                     });
@@ -1298,19 +1535,24 @@
 
             async function carregarMensagens() {
                 try {
-                    const { data } = await supabase
+                    const { data, error } = await supabase
                         .from('mensagens')
                         .select('*')
                         .order('created_at', { ascending: true })
                         .limit(100);
+
+                    if (error) throw error;
 
                     const container = document.getElementById('messagesContainer');
                     const welcomeMsg = container.querySelector('.welcome-message');
                     container.innerHTML = '';
                     if (welcomeMsg) container.appendChild(welcomeMsg);
 
-                    if (data) {
-                        data.forEach(msg => adicionarMensagem(msg));
+                    if (data && data.length > 0) {
+                        data.forEach(msg => {
+                            ultimaMensagemId = msg.id;
+                            adicionarMensagem(msg);
+                        });
                         scrollToBottom();
                     }
                 } catch (error) {
@@ -1321,24 +1563,21 @@
             function adicionarMensagem(msg) {
                 const container = document.getElementById('messagesContainer');
                 
-                // Verificar duplicatas
-                const mensagensExistentes = container.querySelectorAll('.message');
-                for (let i = mensagensExistentes.length - 1; i >= 0; i--) {
-                    const msgExistente = mensagensExistentes[i];
-                    const autorExistente = msgExistente.querySelector('.message-author')?.textContent;
-                    const textoExistente = msgExistente.querySelector('.message-text')?.textContent;
-                    
-                    if (autorExistente === msg.usuario_nome && textoExistente === msg.mensagem) {
-                        return;
-                    }
-                }
+                // Verificar se a mensagem já existe
+                const mensagemExistente = Array.from(container.querySelectorAll('.message')).some(el => {
+                    const autor = el.querySelector('.message-author')?.textContent;
+                    const texto = el.querySelector('.message-text')?.textContent;
+                    return autor === msg.usuario_nome && texto === msg.mensagem;
+                });
+
+                if (mensagemExistente) return;
 
                 const isSentByMe = msg.usuario_id === usuarioAtual?.id;
 
                 const messageDiv = document.createElement('div');
                 messageDiv.className = `message ${isSentByMe ? 'sent' : 'received'}`;
 
-                const isAdmin = msg.usuario_nome === 'Pedrinho Gameplays';
+                const isAdmin = msg.usuario_nome === 'Pedrinho Gameplays' || msg.is_admin;
 
                 const time = new Date(msg.created_at).toLocaleTimeString('pt-BR', {
                     hour: '2-digit',
@@ -1348,9 +1587,9 @@
                 messageDiv.innerHTML = `
                     <div class="message-bubble">
                         <div class="message-header">
-                            <img src="${msg.usuario_avatar}" class="message-avatar">
+                            <img src="${msg.usuario_avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + msg.usuario_nome}" class="message-avatar" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=default'">
                             <span class="message-author ${isAdmin ? 'admin' : ''}">
-                                ${msg.usuario_nome}
+                                ${escaparHTML(msg.usuario_nome)}
                                 ${isAdmin ? '<span class="admin-crown">👑</span>' : ''}
                             </span>
                             <span class="message-time">${time}</span>
@@ -1363,6 +1602,7 @@
 
                 container.appendChild(messageDiv);
                 
+                // Esconder mensagem de boas-vindas se houver outras mensagens
                 const welcomeMsg = container.querySelector('.welcome-message');
                 if (welcomeMsg && container.children.length > 2) {
                     welcomeMsg.style.display = 'none';
@@ -1373,9 +1613,10 @@
                 const input = document.getElementById('messageInput');
                 const texto = input.value.trim();
 
-                if (!texto) return;
+                if (!texto || !usuarioAtual) return;
 
                 input.value = '';
+                input.focus();
 
                 try {
                     const { error } = await supabase
@@ -1384,24 +1625,28 @@
                             usuario_id: usuarioAtual.id,
                             usuario_nome: usuarioAtual.nome,
                             usuario_avatar: usuarioAtual.avatar,
-                            mensagem: texto
+                            mensagem: texto,
+                            created_at: new Date().toISOString()
                         }]);
 
                     if (error) throw error;
                     
                 } catch (error) {
                     console.error('Erro ao enviar:', error);
-                    alert('Erro ao enviar mensagem');
+                    mostrarErro('Erro ao enviar mensagem');
+                    input.value = texto; // Restaurar mensagem
                 }
             }
 
             async function carregarMembros() {
                 try {
-                    const { data } = await supabase
+                    const { data, error } = await supabase
                         .from('usuarios')
                         .select('*')
+                        .order('online', { ascending: false })
                         .order('last_seen', { ascending: false });
 
+                    if (error) throw error;
                     if (!data) return;
 
                     const membersList = document.getElementById('membersList');
@@ -1410,16 +1655,10 @@
                     const now = new Date();
                     let onlineCount = 0;
 
-                    data.sort((a, b) => {
-                        if (a.nome === 'Pedrinho Gameplays') return -1;
-                        if (b.nome === 'Pedrinho Gameplays') return 1;
-                        return 0;
-                    });
-
                     data.forEach(user => {
                         const lastSeen = new Date(user.last_seen);
                         const diffMinutes = (now - lastSeen) / (1000 * 60);
-                        const isOnline = user.id === usuarioAtual?.id || diffMinutes < 5;
+                        const isOnline = user.online || (user.id === usuarioAtual?.id) || diffMinutes < 2;
 
                         if (isOnline) onlineCount++;
 
@@ -1427,10 +1666,10 @@
                         memberDiv.className = `member-item ${user.nome === 'Pedrinho Gameplays' ? 'admin' : ''}`;
 
                         memberDiv.innerHTML = `
-                            <img src="${user.avatar_url}" class="member-avatar">
+                            <img src="${user.avatar_url || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + user.nome}" class="member-avatar" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=default'">
                             <div class="member-info">
                                 <div class="member-name">
-                                    ${user.nome}
+                                    ${escaparHTML(user.nome)}
                                     ${user.nome === 'Pedrinho Gameplays' ? '<span class="admin-tag">ADMIN</span>' : ''}
                                 </div>
                                 <div class="member-status">
@@ -1451,24 +1690,22 @@
 
             function scrollToBottom() {
                 const container = document.getElementById('messagesContainer');
-                container.scrollTop = container.scrollHeight;
+                container.scrollTo({
+                    top: container.scrollHeight,
+                    behavior: 'smooth'
+                });
             }
 
-            async function atualizarStatusOnline(isOnline) {
-                if (isOnline && usuarioAtual) {
+            // Cleanup ao sair
+            window.addEventListener('beforeunload', async () => {
+                if (usuarioAtual) {
                     await supabase
                         .from('usuarios')
-                        .update({ last_seen: new Date().toISOString() })
+                        .update({ 
+                            online: false,
+                            last_seen: new Date().toISOString()
+                        })
                         .eq('id', usuarioAtual.id);
-                }
-            }
-
-            window.addEventListener('beforeunload', () => {
-                if (usuarioAtual) {
-                    navigator.sendBeacon(
-                        `${SUPABASE_URL}/rest/v1/usuarios?id=eq.${usuarioAtual.id}`,
-                        JSON.stringify({ last_seen: new Date().toISOString() })
-                    );
                 }
             });
         })();
