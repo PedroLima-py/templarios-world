@@ -82,6 +82,12 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
         /* ===== TELA DE LOGIN ===== */
         .login-screen {
             height: 100dvh;
@@ -544,6 +550,30 @@
             line-height: 1.4;
         }
 
+        /* Estilos para mensagens de áudio */
+        .message-audio {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 5px 10px;
+            border-radius: var(--radius-full);
+        }
+
+        .message-audio audio {
+            max-width: 250px;
+            height: 40px;
+        }
+
+        .audio-duration {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            background: var(--bg-tertiary);
+            padding: 3px 8px;
+            border-radius: var(--radius-full);
+            white-space: nowrap;
+        }
+
         .welcome-message {
             justify-content: center;
             margin: 20px 0;
@@ -563,7 +593,7 @@
             margin-bottom: 10px;
         }
 
-        /* ===== BARRA DE DIGITAÇÃO REDESIGN ===== */
+        /* ===== BARRA DE DIGITAÇÃO REDESIGN COM ÁUDIO ===== */
         .input-area {
             padding: 20px 25px;
             padding-bottom: max(20px, var(--safe-area-inset-bottom));
@@ -574,6 +604,7 @@
             align-items: center;
             flex-shrink: 0;
             box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.2);
+            position: relative;
         }
 
         .emoji-btn {
@@ -597,6 +628,36 @@
             color: var(--primary-400);
             transform: scale(1.05);
             background: var(--bg-elevated);
+        }
+
+        .audio-btn {
+            width: 48px;
+            height: 48px;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-medium);
+            border-radius: var(--radius-full);
+            color: var(--text-tertiary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-base);
+            flex-shrink: 0;
+            font-size: 1.3rem;
+        }
+
+        .audio-btn:hover {
+            border-color: var(--primary-400);
+            color: var(--primary-400);
+            transform: scale(1.05);
+            background: var(--bg-elevated);
+        }
+
+        .audio-btn.recording {
+            background: var(--error);
+            color: white;
+            border-color: var(--error);
+            animation: pulse 1.5s infinite;
         }
 
         .message-input {
@@ -648,6 +709,70 @@
 
         .send-btn:active {
             transform: scale(0.95);
+        }
+
+        /* Preview de Áudio */
+        .audio-preview {
+            position: absolute;
+            bottom: calc(100% + 10px);
+            right: 20px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-medium);
+            border-radius: var(--radius-lg);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: var(--shadow-xl);
+            z-index: 100;
+            animation: fadeIn 0.3s;
+        }
+
+        .audio-timer {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-400);
+            font-family: monospace;
+        }
+
+        .audio-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .audio-actions button {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-base);
+        }
+
+        .cancel-audio {
+            background: var(--bg-tertiary);
+            color: var(--error);
+            border: 1px solid var(--border-medium);
+        }
+
+        .cancel-audio:hover {
+            background: var(--error);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .send-audio {
+            background: linear-gradient(135deg, var(--primary-500), var(--primary-400));
+            color: white;
+        }
+
+        .send-audio:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px var(--accent-glow);
         }
 
         /* Emoji Picker */
@@ -812,12 +937,16 @@
                 padding: 10px 12px;
             }
 
-            .input-area {
-                padding: 12px 15px;
-                gap: 10px;
+            .message-audio audio {
+                max-width: 180px;
             }
 
-            .emoji-btn, .send-btn {
+            .input-area {
+                padding: 12px 15px;
+                gap: 8px;
+            }
+
+            .emoji-btn, .audio-btn, .send-btn {
                 width: 42px;
                 height: 42px;
                 font-size: 1.1rem;
@@ -833,6 +962,21 @@
                 right: 10px;
                 width: calc(100% - 20px);
                 max-width: 300px;
+            }
+
+            .audio-preview {
+                right: 10px;
+                padding: 12px 15px;
+                gap: 15px;
+            }
+
+            .audio-timer {
+                font-size: 20px;
+            }
+
+            .audio-actions button {
+                width: 40px;
+                height: 40px;
             }
         }
     </style>
@@ -993,12 +1137,32 @@
                 </div>
             </div>
 
-            <!-- BARRA DE DIGITAÇÃO REDESIGN -->
+            <!-- BARRA DE DIGITAÇÃO COM ÁUDIO -->
             <div class="input-area">
                 <button class="emoji-btn" id="emojiBtn">
                     <i class="far fa-laugh"></i>
                 </button>
+                
+                <!-- NOVO: Botão de áudio -->
+                <button class="audio-btn" id="audioBtn">
+                    <i class="fas fa-microphone"></i>
+                </button>
+                
                 <input type="text" class="message-input" id="messageInput" placeholder="Digite sua mensagem...">
+                
+                <!-- Preview de Áudio (invisível inicialmente) -->
+                <div class="audio-preview hidden" id="audioPreview">
+                    <div class="audio-timer" id="audioTimer">0:00</div>
+                    <div class="audio-actions">
+                        <button class="cancel-audio" id="cancelAudioBtn">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        <button class="send-audio" id="sendAudioBtn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+                
                 <button class="send-btn" id="sendBtn">
                     <i class="fas fa-paper-plane"></i>
                 </button>
@@ -1034,11 +1198,25 @@
             let ultimaMensagemId = null;
             let heartbeatInterval = null;
 
+            // ===== VARIÁVEIS PARA ÁUDIO =====
+            let mediaRecorder = null;
+            let audioChunks = [];
+            let audioStream = null;
+            let gravandoAudio = false;
+            let timerInterval = null;
+            let startTime = null;
+
             // ===== UTILITÁRIOS =====
             function escaparHTML(texto) {
                 const div = document.createElement('div');
                 div.textContent = texto;
                 return div.innerHTML;
+            }
+
+            function formatarDuracao(segundos) {
+                const mins = Math.floor(segundos / 60);
+                const secs = segundos % 60;
+                return `${mins}:${secs.toString().padStart(2, '0')}`;
             }
 
             function mostrarErro(mensagem) {
@@ -1054,6 +1232,187 @@
                 if (!lastSeen) return false;
                 const diffSeconds = (Date.now() - new Date(lastSeen)) / 1000;
                 return diffSeconds < 30; // 30 segundos de tolerância
+            }
+
+            // ===== FUNÇÕES DE ÁUDIO =====
+            async function comecarGravacaoAudio() {
+                try {
+                    // Pede permissão pro microfone
+                    audioStream = await navigator.mediaDevices.getUserMedia({ 
+                        audio: {
+                            echoCancellation: true,
+                            noiseSuppression: true,
+                            sampleRate: 24000, // Qualidade boa, tamanho médio
+                        } 
+                    });
+                    
+                    // Configurar gravador
+                    mediaRecorder = new MediaRecorder(audioStream, {
+                        mimeType: 'audio/webm' // Formato suportado por todos
+                    });
+                    
+                    audioChunks = [];
+                    
+                    mediaRecorder.ondataavailable = (event) => {
+                        audioChunks.push(event.data);
+                    };
+                    
+                    mediaRecorder.onstop = async () => {
+                        // Parar todas as tracks do microfone
+                        if (audioStream) {
+                            audioStream.getTracks().forEach(track => track.stop());
+                        }
+                        
+                        // Criar blob do áudio
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        
+                        // Mostrar preview
+                        mostrarPreviewAudio(audioBlob);
+                    };
+                    
+                    // Começar gravação
+                    mediaRecorder.start();
+                    gravandoAudio = true;
+                    
+                    // Iniciar timer
+                    startTime = Date.now();
+                    atualizarTimer();
+                    
+                    // Mudar UI
+                    document.getElementById('audioBtn').classList.add('recording');
+                    document.getElementById('audioBtn').innerHTML = '<i class="fas fa-stop"></i>';
+                    
+                } catch (error) {
+                    console.error('Erro ao acessar microfone:', error);
+                    mostrarErro('Precisamos de acesso ao microfone para gravar áudio!');
+                }
+            }
+
+            function pararGravacaoAudio() {
+                if (mediaRecorder && gravandoAudio) {
+                    mediaRecorder.stop();
+                    gravandoAudio = false;
+                    
+                    // Parar timer
+                    clearInterval(timerInterval);
+                    
+                    // Resetar UI
+                    document.getElementById('audioBtn').classList.remove('recording');
+                    document.getElementById('audioBtn').innerHTML = '<i class="fas fa-microphone"></i>';
+                }
+            }
+
+            function cancelarGravacao() {
+                if (mediaRecorder && gravandoAudio) {
+                    mediaRecorder.stop();
+                    gravandoAudio = false;
+                }
+                
+                // Limpar tudo
+                audioChunks = [];
+                clearInterval(timerInterval);
+                document.getElementById('audioPreview').classList.add('hidden');
+                document.getElementById('audioBtn').classList.remove('recording');
+                document.getElementById('audioBtn').innerHTML = '<i class="fas fa-microphone"></i>';
+                
+                // Parar tracks se ainda estiverem rodando
+                if (audioStream) {
+                    audioStream.getTracks().forEach(track => track.stop());
+                    audioStream = null;
+                }
+            }
+
+            function atualizarTimer() {
+                timerInterval = setInterval(() => {
+                    if (!startTime) return;
+                    
+                    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                    const minutes = Math.floor(elapsed / 60);
+                    const seconds = elapsed % 60;
+                    
+                    document.getElementById('audioTimer').textContent = 
+                        `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                    
+                    // Limite de 2 minutos (opcional - você pode ajustar)
+                    if (elapsed >= 120) { // 2 minutos
+                        pararGravacaoAudio();
+                        mostrarErro('Limite de 2 minutos atingido!');
+                    }
+                }, 1000);
+            }
+
+            function mostrarPreviewAudio(blob) {
+                const preview = document.getElementById('audioPreview');
+                preview.classList.remove('hidden');
+                
+                // Armazenar blob para enviar depois
+                preview.dataset.audioBlob = URL.createObjectURL(blob);
+                preview.dataset.rawBlob = blob;
+            }
+
+            async function enviarAudio(blob) {
+                if (!usuarioAtual) return;
+                
+                try {
+                    // Verificar tamanho (opcional - limite de 5MB)
+                    if (blob.size > 5 * 1024 * 1024) {
+                        mostrarErro('Áudio muito grande! Máximo 5MB');
+                        cancelarGravacao();
+                        return;
+                    }
+
+                    // Gerar nome único
+                    const fileName = `audio_${Date.now()}_${usuarioAtual.id}.webm`;
+                    
+                    // Upload para Supabase Storage
+                    const { data, error } = await supabase.storage
+                        .from('mensagens-audio')
+                        .upload(fileName, blob, {
+                            contentType: 'audio/webm',
+                            cacheControl: '3600'
+                        });
+                    
+                    if (error) {
+                        console.error('Erro no upload:', error);
+                        mostrarErro('Erro ao fazer upload do áudio. Verifique se o bucket "mensagens-audio" existe.');
+                        return;
+                    }
+                    
+                    // Pegar URL pública
+                    const { data: { publicUrl } } = supabase.storage
+                        .from('mensagens-audio')
+                        .getPublicUrl(fileName);
+                    
+                    // Calcular duração aproximada
+                    const duracao = Math.floor((Date.now() - startTime) / 1000);
+                    
+                    // Inserir mensagem no banco
+                    const { error: insertError } = await supabase
+                        .from('mensagens')
+                        .insert([{
+                            usuario_id: usuarioAtual.id,
+                            usuario_nome: usuarioAtual.nome,
+                            usuario_avatar: usuarioAtual.avatar,
+                            mensagem: '', // vazio porque é áudio
+                            tipo_mensagem: 'audio',
+                            audio_url: publicUrl,
+                            duracao_audio: duracao,
+                            created_at: new Date().toISOString()
+                        }]);
+                    
+                    if (insertError) {
+                        console.error('Erro ao inserir mensagem:', insertError);
+                        mostrarErro('Erro ao enviar mensagem de áudio');
+                        return;
+                    }
+                    
+                    // Limpar preview
+                    document.getElementById('audioPreview').classList.add('hidden');
+                    
+                } catch (error) {
+                    console.error('Erro ao enviar áudio:', error);
+                    mostrarErro('Erro ao enviar áudio. Tente novamente.');
+                }
             }
 
             // ===== SISTEMA DE LOGIN =====
@@ -1343,6 +1702,7 @@
             }
 
             function configurarEventos() {
+                // Botão de enviar mensagem de texto
                 document.getElementById('sendBtn').addEventListener('click', enviarMensagem);
                 document.getElementById('messageInput').addEventListener('keypress', (e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
@@ -1351,7 +1711,34 @@
                     }
                 });
 
+                // Botão de áudio
+                const audioBtn = document.getElementById('audioBtn');
+                audioBtn.addEventListener('click', () => {
+                    if (!gravandoAudio) {
+                        comecarGravacaoAudio();
+                    } else {
+                        pararGravacaoAudio();
+                    }
+                });
+
+                // Botões do preview de áudio
+                document.getElementById('cancelAudioBtn').addEventListener('click', cancelarGravacao);
+                
+                document.getElementById('sendAudioBtn').addEventListener('click', () => {
+                    const preview = document.getElementById('audioPreview');
+                    const blob = preview.dataset.rawBlob;
+                    if (blob) {
+                        enviarAudio(blob);
+                    }
+                });
+
+                // Logout
                 document.getElementById('logoutBtn').addEventListener('click', async () => {
+                    // Cancelar gravação se estiver acontecendo
+                    if (gravandoAudio) {
+                        cancelarGravacao();
+                    }
+                    
                     // Remover heartbeat
                     if (heartbeatInterval) {
                         clearInterval(heartbeatInterval);
@@ -1366,7 +1753,7 @@
                     window.location.reload();
                 });
 
-                // Emoji picker (agora apenas com um botão)
+                // Emoji picker
                 const emojiBtn = document.getElementById('emojiBtn');
                 const emojiPicker = document.getElementById('emojiPicker');
 
@@ -1453,6 +1840,11 @@
                 const mensagemExistente = Array.from(container.querySelectorAll('.message')).some(el => {
                     const autor = el.querySelector('.message-author')?.textContent;
                     const texto = el.querySelector('.message-text')?.textContent;
+                    const audioEl = el.querySelector('audio');
+                    
+                    if (audioEl) {
+                        return autor === msg.usuario_nome && audioEl.src === msg.audio_url;
+                    }
                     return autor === msg.usuario_nome && texto === msg.mensagem;
                 });
 
@@ -1464,6 +1856,20 @@
 
                 const messageDiv = document.createElement('div');
                 messageDiv.className = `message ${isSentByMe ? 'sent' : 'received'}`;
+                
+                let conteudoMensagem = '';
+                
+                if (msg.tipo_mensagem === 'audio' && msg.audio_url) {
+                    conteudoMensagem = `
+                        <div class="message-audio">
+                            <audio controls src="${msg.audio_url}"></audio>
+                            ${msg.duracao_audio ? `<span class="audio-duration">${formatarDuracao(msg.duracao_audio)}</span>` : ''}
+                        </div>
+                    `;
+                } else {
+                    conteudoMensagem = escaparHTML(msg.mensagem);
+                }
+                
                 messageDiv.innerHTML = `
                     <div class="message-bubble">
                         <div class="message-header">
@@ -1475,7 +1881,7 @@
                             <span class="message-time">${time}</span>
                         </div>
                         <div class="message-text">
-                            ${escaparHTML(msg.mensagem)}
+                            ${conteudoMensagem}
                         </div>
                     </div>
                 `;
@@ -1505,6 +1911,7 @@
                             usuario_nome: usuarioAtual.nome,
                             usuario_avatar: usuarioAtual.avatar,
                             mensagem: texto,
+                            tipo_mensagem: 'texto',
                             created_at: new Date().toISOString()
                         }]);
 
@@ -1576,6 +1983,9 @@
 
             // Cleanup ao sair da página
             window.addEventListener('beforeunload', () => {
+                if (gravandoAudio) {
+                    cancelarGravacao();
+                }
                 if (heartbeatInterval) {
                     clearInterval(heartbeatInterval);
                 }
