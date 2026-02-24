@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
+        /* (Mantém todo o CSS igual ao anterior) */
         * {
             margin: 0;
             padding: 0;
@@ -1140,8 +1141,8 @@
         (function() {
             // ===== CONFIGURAÇÃO SUPABASE CORRIGIDA =====
             const SUPABASE_URL = 'https://oknysnqbidhcdqinehwk.supabase.co';
-            // Usando a chave anon/public correta
-            const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rbnlzbnFiaWRoY2RxaW5laHdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTAyNDU2NDAsImV4cCI6MjAyNTgyMTY0MH0.JZ7pQxL5kL5kL5kL5kL5kL5kL5kL5kL5kL5kL5kL5k';
+            // Usando a publishable key fornecida
+            const SUPABASE_KEY = 'sb_publishable_UrxALLkgzzTBDNpQxSypBQ_7dJMQpsj';
 
             // Criar cliente Supabase
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -1224,29 +1225,34 @@
                 }
 
                 try {
+                    console.log('Tentando login com:', nome);
+                    
                     const { data, error } = await supabase
                         .from('usuarios')
                         .select('*')
                         .eq('nome', nome)
-                        .eq('senha', senha)
-                        .maybeSingle();
+                        .eq('senha', senha);
 
                     if (error) {
                         console.error('Erro na consulta:', error);
-                        mostrarErro('Erro ao conectar com o servidor');
+                        mostrarErro('Erro ao conectar com o servidor: ' + error.message);
                         return;
                     }
 
-                    if (!data) {
+                    console.log('Dados retornados:', data);
+
+                    if (!data || data.length === 0) {
                         mostrarErro('Nome ou senha incorretos!');
                         return;
                     }
 
+                    const user = data[0];
+
                     usuarioAtual = {
-                        id: data.id,
-                        nome: data.nome,
-                        avatar: data.avatar_url || `assets/${selectedAvatar.value}.png`,
-                        is_admin: data.is_admin || false
+                        id: user.id,
+                        nome: user.nome,
+                        avatar: user.avatar_url || `assets/${selectedAvatar.value}.png`,
+                        is_admin: user.is_admin || false
                     };
 
                     sessionStorage.setItem('templario_user', JSON.stringify(usuarioAtual));
@@ -1299,8 +1305,7 @@
                     const { data: existente, error: checkError } = await supabase
                         .from('usuarios')
                         .select('nome')
-                        .eq('nome', nome)
-                        .maybeSingle();
+                        .eq('nome', nome);
 
                     if (checkError) {
                         console.error('Erro ao verificar usuário:', checkError);
@@ -1308,7 +1313,7 @@
                         return;
                     }
 
-                    if (existente) {
+                    if (existente && existente.length > 0) {
                         mostrarErro('Este nome já está em uso!');
                         return;
                     }
@@ -1376,7 +1381,7 @@
                 iniciarHeartbeat();
             }
 
-            // ===== TEMPO REAL CORRIGIDO =====
+            // ===== TEMPO REAL =====
             function setupRealtime() {
                 console.log('🎯 Configurando tempo real...');
                 
