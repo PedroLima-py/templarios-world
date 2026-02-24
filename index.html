@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* (Mantém todo o CSS igual ao anterior) */
         * {
             margin: 0;
             padding: 0;
@@ -287,6 +286,7 @@
             flex-direction: column;
             height: 100vh;
             overflow-y: auto;
+            flex-shrink: 0;
         }
 
         .sidebar-header {
@@ -470,7 +470,7 @@
             border-color: var(--error);
         }
 
-        /* Chat Main */
+        /* Chat Main - CORRIGIDO para mostrar a barra de digitação */
         .chat-main {
             flex: 1;
             display: flex;
@@ -478,6 +478,7 @@
             height: 100vh;
             overflow: hidden;
             background: var(--bg-primary);
+            min-width: 0; /* Previne overflow em flex */
         }
 
         .chat-header {
@@ -487,6 +488,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            flex-shrink: 0;
         }
 
         .chat-title h2 {
@@ -526,15 +528,16 @@
             transform: rotate(15deg);
         }
 
-        /* Messages Area */
+        /* Messages Area - AJUSTADO para ocupar espaço disponível */
         .messages-container {
-            flex: 1;
+            flex: 1 1 auto;
             padding: 20px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
             gap: 15px;
             scroll-behavior: smooth;
+            min-height: 0; /* Importante para flexbox */
         }
 
         .message {
@@ -623,7 +626,7 @@
             margin-bottom: 10px;
         }
 
-        /* Input Area */
+        /* Input Area - CORRIGIDO para ficar sempre visível */
         .input-area {
             padding: 15px 20px;
             background: var(--bg-secondary);
@@ -631,6 +634,8 @@
             display: flex;
             gap: 10px;
             align-items: center;
+            flex-shrink: 0;
+            width: 100%;
         }
 
         .emoji-btn {
@@ -799,7 +804,7 @@
             .chat-sidebar {
                 width: 100%;
                 height: auto;
-                max-height: 40vh;
+                max-height: 35vh;
                 border-right: none;
                 border-bottom: 1px solid var(--border-medium);
             }
@@ -853,7 +858,8 @@
             }
 
             .chat-main {
-                height: 60vh;
+                height: 65vh;
+                flex: none;
             }
 
             .chat-header {
@@ -870,6 +876,7 @@
 
             .messages-container {
                 padding: 15px;
+                height: calc(65vh - 120px); /* Altura fixa para mobile */
             }
 
             .message-bubble {
@@ -883,6 +890,9 @@
 
             .input-area {
                 padding: 10px 15px;
+                position: sticky;
+                bottom: 0;
+                background: var(--bg-secondary);
             }
 
             .emoji-btn, .send-btn {
@@ -909,11 +919,15 @@
             }
             
             .chat-sidebar {
-                max-height: 35vh;
+                max-height: 30vh;
             }
             
             .chat-main {
-                height: 65vh;
+                height: 70vh;
+            }
+            
+            .messages-container {
+                height: calc(70vh - 110px);
             }
             
             .message-bubble {
@@ -938,11 +952,15 @@
 
         @media (orientation: landscape) and (max-height: 500px) {
             .chat-sidebar {
-                max-height: 80vh;
+                max-height: 30vh;
             }
             
             .chat-main {
-                height: 80vh;
+                height: 70vh;
+            }
+            
+            .messages-container {
+                height: calc(70vh - 100px);
             }
             
             .member-item {
@@ -952,7 +970,7 @@
     </style>
 </head>
 <body>
-    <!-- TELA DE LOGIN -->
+    <!-- TELA DE LOGIN (MANTIDA IGUAL) -->
     <div id="loginScreen" class="login-screen">
         <div class="login-card">
             <div class="login-header">
@@ -1139,9 +1157,8 @@
 
     <script>
         (function() {
-            // ===== CONFIGURAÇÃO SUPABASE CORRIGIDA =====
+            // ===== CONFIGURAÇÃO SUPABASE =====
             const SUPABASE_URL = 'https://oknysnqbidhcdqinehwk.supabase.co';
-            // Usando a publishable key fornecida
             const SUPABASE_KEY = 'sb_publishable_UrxALLkgzzTBDNpQxSypBQ_7dJMQpsj';
 
             // Criar cliente Supabase
@@ -1225,8 +1242,6 @@
                 }
 
                 try {
-                    console.log('Tentando login com:', nome);
-                    
                     const { data, error } = await supabase
                         .from('usuarios')
                         .select('*')
@@ -1238,8 +1253,6 @@
                         mostrarErro('Erro ao conectar com o servidor: ' + error.message);
                         return;
                     }
-
-                    console.log('Dados retornados:', data);
 
                     if (!data || data.length === 0) {
                         mostrarErro('Nome ou senha incorretos!');
@@ -1258,17 +1271,13 @@
                     sessionStorage.setItem('templario_user', JSON.stringify(usuarioAtual));
 
                     // Atualizar último acesso
-                    const { error: updateError } = await supabase
+                    await supabase
                         .from('usuarios')
                         .update({ 
                             last_seen: new Date().toISOString(),
                             online: true 
                         })
                         .eq('id', usuarioAtual.id);
-
-                    if (updateError) {
-                        console.error('Erro ao atualizar status:', updateError);
-                    }
 
                     mostrarChat();
                     inicializarChat();
@@ -1442,19 +1451,15 @@
             function iniciarHeartbeat() {
                 setInterval(async () => {
                     if (usuarioAtual) {
-                        const { error } = await supabase
+                        await supabase
                             .from('usuarios')
                             .update({ 
                                 last_seen: new Date().toISOString(),
                                 online: true 
                             })
                             .eq('id', usuarioAtual.id);
-                        
-                        if (error) {
-                            console.error('Erro no heartbeat:', error);
-                        }
                     }
-                }, 30000); // A cada 30 segundos
+                }, 30000);
             }
 
             // Configurar eventos
@@ -1639,13 +1644,13 @@
                     if (error) {
                         console.error('Erro ao enviar:', error);
                         mostrarErro('Erro ao enviar mensagem');
-                        input.value = texto; // Restaurar mensagem
+                        input.value = texto;
                     }
                     
                 } catch (error) {
                     console.error('Erro ao enviar:', error);
                     mostrarErro('Erro ao enviar mensagem');
-                    input.value = texto; // Restaurar mensagem
+                    input.value = texto;
                 }
             }
 
