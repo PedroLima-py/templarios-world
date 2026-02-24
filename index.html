@@ -1047,6 +1047,7 @@
             let mensagensSubscription = null;
             let membrosSubscription = null;
             let ultimaMensagemId = null;
+            let heartbeatInterval = null;
 
             // ===== UTILITÁRIOS =====
             function escaparHTML(texto) {
@@ -1061,6 +1062,13 @@
 
             function mostrarSucesso(mensagem) {
                 alert('✅ ' + mensagem);
+            }
+
+            // ===== VERIFICA SE USUÁRIO ESTÁ ONLINE (BASEADO NO LAST_SEEN) =====
+            function isOnline(lastSeen) {
+                if (!lastSeen) return false;
+                const diffSeconds = (Date.now() - new Date(lastSeen)) / 1000;
+                return diffSeconds < 30; // 30 segundos de tolerância
             }
 
             // ===== SISTEMA DE LOGIN =====
@@ -1148,11 +1156,11 @@
 
                     sessionStorage.setItem('templario_user', JSON.stringify(usuarioAtual));
 
+                    // Atualizar last_seen ao fazer login
                     await supabase
                         .from('usuarios')
                         .update({ 
-                            last_seen: new Date().toISOString(),
-                            online: true 
+                            last_seen: new Date().toISOString()
                         })
                         .eq('id', usuarioAtual.id);
 
@@ -1212,7 +1220,6 @@
                             senha: senha,
                             avatar_url: avatarUrl,
                             is_admin: false,
-                            online: false,
                             last_seen: new Date().toISOString()
                         }]);
 
@@ -1262,7 +1269,7 @@
                 // Configurar emojis
                 configurarEmojis();
 
-                // Heartbeat
+                // Iniciar heartbeat (a cada 15 segundos)
                 iniciarHeartbeat();
             }
 
@@ -1298,16 +1305,31 @@
                     )
                     .subscribe();
 
+                // Escutar UPDATES na tabela usuarios para atualizar a lista em tempo real
                 membrosSubscription = supabase
                     .channel('membros')
                     .on(
                         'postgres_changes',
                         { 
-                            event: '*', 
+                            event: 'UPDATE', 
+                            schema: 'public', 
+                            table: 'usuarios' 
+                        },
+                        (payload) => {
+                            console.log('👤 Update de usuário:', payload.new);
+                            // Atualizar a lista de membros quando alguém atualizar o last_seen
+                            carregarMembros();
+                        }
+                    )
+                    .on(
+                        'postgres_changes',
+                        { 
+                            event: 'INSERT', 
                             schema: 'public', 
                             table: 'usuarios' 
                         },
                         () => {
+                            // Novo usuário registrado
                             carregarMembros();
                         }
                     )
@@ -1315,17 +1337,22 @@
             }
 
             function iniciarHeartbeat() {
-                setInterval(async () => {
+                // Limpar intervalo anterior se existir
+                if (heartbeatInterval) {
+                    clearInterval(heartbeatInterval);
+                }
+                
+                // Heartbeat a cada 15 segundos (apenas atualiza last_seen)
+                heartbeatInterval = setInterval(async () => {
                     if (usuarioAtual) {
                         await supabase
                             .from('usuarios')
                             .update({ 
-                                last_seen: new Date().toISOString(),
-                                online: true 
+                                last_seen: new Date().toISOString()
                             })
                             .eq('id', usuarioAtual.id);
                     }
-                }, 30000);
+                }, 15000);
             }
 
             function configurarEventos() {
@@ -1338,16 +1365,17 @@
                 });
 
                 document.getElementById('logoutBtn').addEventListener('click', async () => {
-                    if (usuarioAtual) {
-                        await supabase
-                            .from('usuarios')
-                            .update({ 
-                                online: false,
-                                last_seen: new Date().toISOString()
-                            })
-                            .eq('id', usuarioAtual.id);
+                    // Remover heartbeat
+                    if (heartbeatInterval) {
+                        clearInterval(heartbeatInterval);
+                        heartbeatInterval = null;
                     }
+                    
+                    // Remover sessão
                     sessionStorage.removeItem('templario_user');
+                    usuarioAtual = null;
+                    
+                    // Recarregar para voltar ao login
                     window.location.reload();
                 });
 
@@ -1515,8 +1543,7 @@
                     const { data, error } = await supabase
                         .from('usuarios')
                         .select('*')
-                        .order('online', { ascending: false })
-                        .order('last_seen', { ascending: false });
+                        .order('last_seen', { ascending: false }); // Mais recentes primeiro
 
                     if (error) {
                         console.error('Erro ao carregar membros:', error);
@@ -1528,15 +1555,12 @@
                     const membersList = document.getElementById('membersList');
                     membersList.innerHTML = '';
 
-                    const now = new Date();
                     let onlineCount = 0;
 
                     data.forEach(user => {
-                        const lastSeen = new Date(user.last_seen);
-                        const diffMinutes = (now - lastSeen) / (1000 * 60);
-                        const isOnline = user.online || (user.id === usuarioAtual?.id) || diffMinutes < 2;
-
-                        if (isOnline) onlineCount++;
+                        // Verificar se está online baseado no last_seen (menos de 30 segundos)
+                        const userOnline = isOnline(user.last_seen);
+                        if (userOnline) onlineCount++;
 
                         const memberDiv = document.createElement('div');
                         memberDiv.className = `member-item ${user.nome === 'Pedrinho Gameplays' ? 'admin' : ''}`;
@@ -1548,8 +1572,8 @@
                                     ${user.nome === 'Pedrinho Gameplays' ? '<span class="admin-tag">ADMIN</span>' : ''}
                                 </div>
                                 <div class="member-status">
-                                    <span class="status-dot ${isOnline ? 'online' : 'offline'}"></span>
-                                    ${isOnline ? 'Online' : 'Offline'}
+                                    <span class="status-dot ${userOnline ? 'online' : 'offline'}"></span>
+                                    ${userOnline ? 'Online' : 'Offline'}
                                 </div>
                             </div>
                         `;
@@ -1567,15 +1591,10 @@
                 container.scrollTop = container.scrollHeight;
             }
 
-            window.addEventListener('beforeunload', async () => {
-                if (usuarioAtual) {
-                    await supabase
-                        .from('usuarios')
-                        .update({ 
-                            online: false,
-                            last_seen: new Date().toISOString()
-                        })
-                        .eq('id', usuarioAtual.id);
+            // Cleanup ao sair da página (opcional, não essencial)
+            window.addEventListener('beforeunload', () => {
+                if (heartbeatInterval) {
+                    clearInterval(heartbeatInterval);
                 }
             });
         })();
