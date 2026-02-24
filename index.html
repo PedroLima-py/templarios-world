@@ -20,7 +20,6 @@
         }
 
         :root {
-            /* Cores principais */
             --primary-900: #0f0b1f;
             --primary-800: #1a1333;
             --primary-700: #2a1f4a;
@@ -34,202 +33,117 @@
             --accent-gold: #ffb347;
             --accent-glow: rgba(124, 93, 240, 0.5);
 
-            /* Fundos */
             --bg-primary: #0a0c10;
             --bg-secondary: #12141c;
             --bg-tertiary: #1a1d28;
             --bg-elevated: #222634;
 
-            /* Textos */
             --text-primary: #ffffff;
             --text-secondary: #cbd5e0;
             --text-tertiary: #94a3b8;
             --text-muted: #64748b;
 
-            /* Bordas */
             --border-light: rgba(255, 255, 255, 0.05);
             --border-medium: rgba(255, 255, 255, 0.1);
             --border-strong: rgba(255, 255, 255, 0.15);
 
-            /* Status */
             --success: #10b981;
             --error: #ef4444;
-            --warning: #f59e0b;
 
-            /* Efeitos */
             --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.6);
-            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.4);
-            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
 
-            /* Transições */
-            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
             --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
 
-            /* Bordas */
             --radius-sm: 6px;
             --radius-md: 10px;
             --radius-lg: 14px;
             --radius-xl: 20px;
             --radius-full: 9999px;
 
-            /* Safe areas */
             --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
             --safe-area-inset-top: env(safe-area-inset-top, 0px);
         }
 
-        /* ===== ANIMAÇÕES ===== */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        @keyframes slideOut {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100%); opacity: 0; }
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        @keyframes typing {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-5px); }
-        }
-
-        @keyframes glow {
-            0%, 100% { box-shadow: 0 0 5px var(--accent-glow); }
-            50% { box-shadow: 0 0 20px var(--accent-glow); }
-        }
-
-        /* ===== ESTILOS BASE ===== */
         body {
             font-family: 'Inter', sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
-            min-height: 100dvh;
+            height: 100vh;
             overflow: hidden;
-            line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
         }
 
         .hidden {
             display: none !important;
         }
 
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         /* ===== TELA DE LOGIN ===== */
         .login-screen {
-            min-height: 100dvh;
+            height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
-            padding-bottom: max(20px, var(--safe-area-inset-bottom));
             background: radial-gradient(circle at 50% 50%, var(--bg-secondary) 0%, var(--bg-primary) 100%);
-            position: relative;
-            overflow-y: auto;
-        }
-
-        .login-screen::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--primary-400), transparent);
         }
 
         .login-card {
             width: 100%;
-            max-width: 420px;
+            max-width: 400px;
             background: var(--bg-secondary);
             border-radius: var(--radius-xl);
-            padding: 32px;
+            padding: 30px;
             border: 1px solid var(--border-medium);
             box-shadow: var(--shadow-xl);
-            backdrop-filter: blur(10px);
-            animation: fadeIn 0.5s ease-out;
-            position: relative;
-            z-index: 1;
-        }
-
-        .login-card::before {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            border-radius: var(--radius-xl);
-            padding: 1px;
-            background: linear-gradient(135deg, var(--primary-400), transparent, var(--accent-gold));
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            opacity: 0.5;
-            pointer-events: none;
         }
 
         .login-header {
             text-align: center;
-            margin-bottom: 32px;
+            margin-bottom: 30px;
         }
 
         .logo-wrapper {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 16px;
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 15px;
             background: linear-gradient(135deg, var(--primary-600), var(--primary-400));
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: var(--shadow-lg);
-            animation: glow 3s infinite;
         }
 
         .logo-wrapper i {
-            font-size: 40px;
+            font-size: 35px;
             color: white;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
         }
 
         .login-header h1 {
-            font-size: 28px;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--text-primary), var(--primary-300));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
-            letter-spacing: -0.5px;
+            font-size: 24px;
+            margin-bottom: 5px;
         }
 
         .login-header p {
             color: var(--text-tertiary);
             font-size: 14px;
-            font-weight: 400;
         }
 
         .login-tabs {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             background: var(--bg-tertiary);
-            padding: 4px;
+            padding: 5px;
             border-radius: var(--radius-full);
-            margin-bottom: 28px;
-            border: 1px solid var(--border-light);
+            margin-bottom: 25px;
         }
 
         .tab-btn {
             flex: 1;
-            padding: 12px;
+            padding: 10px;
             background: transparent;
             border: none;
             border-radius: var(--radius-full);
@@ -238,32 +152,11 @@
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition-base);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .tab-btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            transform: translate(-50%, -50%);
-            transition: width 0.3s, height 0.3s;
-        }
-
-        .tab-btn:hover::before {
-            width: 100px;
-            height: 100px;
         }
 
         .tab-btn.active {
-            background: linear-gradient(135deg, var(--primary-500), var(--primary-400));
+            background: var(--primary-500);
             color: white;
-            box-shadow: 0 2px 8px var(--accent-glow);
         }
 
         .login-form {
@@ -272,11 +165,11 @@
 
         .login-form.active {
             display: block;
-            animation: fadeIn 0.4s ease-out;
+            animation: fadeIn 0.3s;
         }
 
         .input-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .input-wrapper {
@@ -285,63 +178,35 @@
 
         .input-wrapper i {
             position: absolute;
-            left: 16px;
+            left: 15px;
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-tertiary);
             font-size: 16px;
-            transition: var(--transition-fast);
-            z-index: 1;
         }
 
         .input-wrapper input {
             width: 100%;
-            padding: 16px 16px 16px 48px;
+            padding: 15px 15px 15px 45px;
             background: var(--bg-tertiary);
             border: 1px solid var(--border-medium);
             border-radius: var(--radius-lg);
             color: var(--text-primary);
-            font-size: 15px;
+            font-size: 14px;
             transition: var(--transition-base);
-            position: relative;
-        }
-
-        .input-wrapper input:hover {
-            border-color: var(--primary-400);
         }
 
         .input-wrapper input:focus {
             outline: none;
             border-color: var(--primary-400);
             box-shadow: 0 0 0 3px rgba(124, 93, 240, 0.2);
-            background: var(--bg-elevated);
-        }
-
-        .input-wrapper input:focus + i {
-            color: var(--primary-400);
-        }
-
-        .input-wrapper input::placeholder {
-            color: var(--text-muted);
-            font-size: 14px;
-        }
-
-        .avatar-selection {
-            margin: 24px 0;
-        }
-
-        .avatar-selection label {
-            display: block;
-            color: var(--text-secondary);
-            font-size: 14px;
-            margin-bottom: 12px;
-            font-weight: 500;
         }
 
         .avatar-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
+            gap: 10px;
+            margin: 20px 0;
         }
 
         .avatar-option {
@@ -352,27 +217,11 @@
             padding: 8px;
             cursor: pointer;
             transition: var(--transition-base);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .avatar-option::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at center, var(--primary-400), transparent);
-            opacity: 0;
-            transition: var(--transition-base);
         }
 
         .avatar-option:hover {
-            transform: translateY(-2px);
+            transform: scale(1.05);
             border-color: var(--primary-400);
-            box-shadow: 0 4px 12px var(--accent-glow);
-        }
-
-        .avatar-option:hover::before {
-            opacity: 0.1;
         }
 
         .avatar-option.selected {
@@ -381,81 +230,37 @@
             box-shadow: 0 0 15px var(--accent-glow);
         }
 
-        .avatar-option.selected::after {
-            content: '✓';
-            position: absolute;
-            top: 4px;
-            right: 4px;
-            width: 20px;
-            height: 20px;
-            background: var(--primary-400);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: bold;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
         .avatar-option img {
             width: 100%;
             height: 100%;
             object-fit: contain;
-            position: relative;
-            z-index: 1;
         }
 
         .btn-primary {
             width: 100%;
-            padding: 16px;
+            padding: 15px;
             background: linear-gradient(135deg, var(--primary-500), var(--primary-400));
             border: none;
             border-radius: var(--radius-lg);
             color: white;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
             transition: var(--transition-base);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-primary::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            transform: translate(-50%, -50%);
-            transition: width 0.5s, height 0.5s;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px var(--accent-glow);
+            box-shadow: 0 5px 20px var(--accent-glow);
         }
 
-        .btn-primary:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-
-        /* ===== TELA DO CHAT ===== */
+        /* ===== TELA DO CHAT - CORRIGIDA ===== */
         .chat-screen {
-            min-height: 100dvh;
+            height: 100vh;
             display: flex;
             background: var(--bg-primary);
             overflow: hidden;
@@ -463,108 +268,54 @@
 
         /* Sidebar */
         .chat-sidebar {
-            width: 300px;
+            width: 280px;
             background: var(--bg-secondary);
             border-right: 1px solid var(--border-medium);
             display: flex;
             flex-direction: column;
-            min-height: 100dvh;
+            height: 100vh;
             overflow-y: auto;
             flex-shrink: 0;
-            padding-bottom: var(--safe-area-inset-bottom);
-            position: relative;
-        }
-
-        .chat-sidebar::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--primary-400), transparent);
         }
 
         .sidebar-header {
-            padding: 24px;
+            padding: 20px;
             border-bottom: 1px solid var(--border-medium);
         }
 
         .sidebar-header h2 {
-            font-size: 20px;
+            font-size: 18px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             color: var(--primary-200);
-            font-weight: 700;
-        }
-
-        .sidebar-header i {
-            color: var(--primary-400);
-            font-size: 24px;
         }
 
         .user-profile-card {
             padding: 20px;
-            margin: 16px;
+            margin: 15px;
             background: var(--bg-tertiary);
             border-radius: var(--radius-lg);
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 15px;
             border: 1px solid var(--border-medium);
-            transition: var(--transition-base);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .user-profile-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at center, var(--primary-400), transparent);
-            opacity: 0;
-            transition: var(--transition-base);
-        }
-
-        .user-profile-card:hover {
-            border-color: var(--primary-400);
-            transform: translateX(4px);
-        }
-
-        .user-profile-card:hover::before {
-            opacity: 0.05;
         }
 
         .profile-avatar {
-            width: 56px;
-            height: 56px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             border: 2px solid var(--primary-400);
             object-fit: cover;
-            box-shadow: 0 0 10px var(--accent-glow);
-        }
-
-        .profile-info {
-            flex: 1;
         }
 
         .profile-info h3 {
             font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
             display: flex;
             align-items: center;
-            gap: 6px;
-            color: var(--text-primary);
-        }
-
-        .profile-info i {
-            color: var(--accent-gold);
-            font-size: 14px;
+            gap: 5px;
         }
 
         .profile-status {
@@ -572,21 +323,12 @@
             color: var(--success);
             display: flex;
             align-items: center;
-            gap: 6px;
-            background: rgba(16, 185, 129, 0.1);
-            padding: 4px 8px;
-            border-radius: var(--radius-full);
-            width: fit-content;
-        }
-
-        .profile-status i {
-            font-size: 8px;
-            animation: pulse 2s infinite;
+            gap: 5px;
         }
 
         .online-section {
             flex: 1;
-            padding: 0 16px;
+            padding: 0 15px;
             overflow-y: auto;
         }
 
@@ -594,26 +336,17 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 16px;
+            margin-bottom: 15px;
             color: var(--text-tertiary);
             font-size: 13px;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .online-header i {
-            margin-right: 6px;
-            color: var(--primary-400);
         }
 
         .online-count {
             background: var(--bg-elevated);
-            padding: 4px 10px;
+            padding: 3px 8px;
             border-radius: var(--radius-full);
             color: var(--success);
             font-weight: 600;
-            font-size: 12px;
         }
 
         .members-list {
@@ -625,102 +358,62 @@
         .member-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px;
+            gap: 10px;
+            padding: 10px;
             background: var(--bg-tertiary);
             border: 1px solid var(--border-medium);
             border-radius: var(--radius-lg);
-            transition: var(--transition-base);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .member-item::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 3px;
-            background: linear-gradient(to bottom, var(--primary-400), var(--accent-gold));
-            opacity: 0;
-            transition: var(--transition-base);
-        }
-
-        .member-item:hover {
-            border-color: var(--primary-400);
-            transform: translateX(4px);
-            background: var(--bg-elevated);
-        }
-
-        .member-item:hover::before {
-            opacity: 1;
         }
 
         .member-item.admin {
             border-color: var(--accent-gold);
-            background: linear-gradient(90deg, var(--bg-tertiary), rgba(255, 179, 71, 0.1));
         }
 
         .member-avatar {
-            width: 40px;
-            height: 40px;
+            width: 35px;
+            height: 35px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid transparent;
-        }
-
-        .member-item.admin .member-avatar {
-            border-color: var(--accent-gold);
         }
 
         .member-info {
             flex: 1;
-            min-width: 0;
         }
 
         .member-name {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 6px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            color: var(--text-primary);
+            gap: 5px;
         }
 
         .admin-tag {
             background: var(--accent-gold);
             color: black;
             font-size: 9px;
-            padding: 2px 6px;
+            padding: 2px 5px;
             border-radius: var(--radius-full);
             font-weight: 700;
-            text-transform: uppercase;
         }
 
         .member-status {
-            font-size: 11px;
+            font-size: 10px;
             display: flex;
             align-items: center;
-            gap: 6px;
-            margin-top: 4px;
-            color: var(--text-tertiary);
+            gap: 4px;
+            margin-top: 2px;
         }
 
         .status-dot {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
         }
 
         .status-dot.online {
             background: var(--success);
-            box-shadow: 0 0 8px var(--success);
-            animation: pulse 2s infinite;
+            box-shadow: 0 0 10px var(--success);
         }
 
         .status-dot.offline {
@@ -728,9 +421,8 @@
         }
 
         .logout-btn {
-            margin: 16px;
-            margin-bottom: max(16px, var(--safe-area-inset-bottom));
-            padding: 14px;
+            margin: 15px;
+            padding: 12px;
             background: var(--bg-tertiary);
             border: 1px solid var(--border-medium);
             border-radius: var(--radius-lg);
@@ -739,36 +431,27 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
             transition: var(--transition-base);
-            font-weight: 600;
-            font-size: 14px;
         }
 
         .logout-btn:hover {
             background: rgba(239, 68, 68, 0.1);
             border-color: var(--error);
-            transform: translateY(-2px);
         }
 
-        .logout-btn:active {
-            transform: translateY(0);
-        }
-
-        /* Chat Main */
+        /* Chat Main - CORRIGIDO E SIMPLIFICADO */
         .chat-main {
             flex: 1;
             display: flex;
             flex-direction: column;
-            min-height: 0;
+            height: 100vh;
             background: var(--bg-primary);
             min-width: 0;
-            position: relative;
         }
 
         .chat-header {
-            padding: 16px 24px;
-            padding-top: max(16px, var(--safe-area-inset-top));
+            padding: 15px 20px;
             background: var(--bg-secondary);
             border-bottom: 1px solid var(--border-medium);
             display: flex;
@@ -778,32 +461,25 @@
         }
 
         .chat-title h2 {
-            font-size: 20px;
+            font-size: 18px;
             display: flex;
             align-items: center;
-            gap: 12px;
-            color: var(--text-primary);
-            font-weight: 700;
-        }
-
-        .chat-title i {
-            color: var(--primary-400);
+            gap: 10px;
         }
 
         .chat-badge {
             background: var(--bg-elevated);
             color: var(--text-tertiary);
             font-size: 11px;
-            padding: 4px 12px;
+            padding: 3px 10px;
             border-radius: var(--radius-full);
             display: inline-block;
-            margin-top: 4px;
-            font-weight: 500;
+            margin-top: 3px;
         }
 
         .action-btn {
-            width: 44px;
-            height: 44px;
+            width: 40px;
+            height: 40px;
             background: var(--bg-tertiary);
             border: 1px solid var(--border-medium);
             border-radius: 50%;
@@ -813,31 +489,26 @@
             align-items: center;
             justify-content: center;
             transition: var(--transition-base);
-            font-size: 20px;
         }
 
         .action-btn:hover {
             border-color: var(--primary-400);
             color: var(--primary-400);
-            transform: rotate(15deg) scale(1.1);
-            box-shadow: 0 0 15px var(--accent-glow);
         }
 
-        /* Messages Container */
+        /* Messages Area - CORRIGIDO */
         .messages-container {
-            flex: 1 1 auto;
-            padding: 24px;
+            flex: 1;
+            padding: 20px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 16px;
-            scroll-behavior: smooth;
-            min-height: 0;
+            gap: 15px;
         }
 
         .message {
             display: flex;
-            animation: slideIn 0.3s ease-out;
+            animation: fadeIn 0.3s;
         }
 
         .message.sent {
@@ -850,64 +521,40 @@
 
         .message-bubble {
             max-width: 70%;
-            padding: 12px 16px;
-            border-radius: 20px;
+            padding: 12px 15px;
+            border-radius: 18px;
             background: var(--bg-tertiary);
             border: 1px solid var(--border-medium);
             word-break: break-word;
-            transition: var(--transition-base);
-            position: relative;
         }
 
         .message.sent .message-bubble {
             background: linear-gradient(135deg, var(--primary-600), var(--primary-500));
             border: none;
-            box-shadow: 0 4px 15px var(--accent-glow);
-        }
-
-        .message-bubble::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            width: 12px;
-            height: 12px;
-            background: inherit;
-        }
-
-        .message.received .message-bubble::before {
-            left: -5px;
-            border-radius: 0 0 12px 0;
-            transform: skewX(-10deg);
-        }
-
-        .message.sent .message-bubble::before {
-            right: -5px;
-            border-radius: 0 0 0 12px;
-            transform: skewX(10deg);
+            box-shadow: 0 3px 12px var(--accent-glow);
         }
 
         .message-header {
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 6px;
+            gap: 6px;
+            margin-bottom: 4px;
             flex-wrap: wrap;
         }
 
         .message-avatar {
-            width: 22px;
-            height: 22px;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
             object-fit: cover;
-            border: 1px solid var(--primary-400);
         }
 
         .message-author {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 3px;
         }
 
         .message-author.admin {
@@ -915,69 +562,50 @@
         }
 
         .message-time {
-            font-size: 10px;
+            font-size: 9px;
             color: var(--text-tertiary);
             margin-left: auto;
-            opacity: 0.8;
         }
 
         .message-text {
             font-size: 14px;
-            line-height: 1.5;
-            word-wrap: break-word;
+            line-height: 1.4;
         }
 
         .welcome-message {
             justify-content: center;
-            margin: 30px 0;
+            margin: 20px 0;
         }
 
         .welcome-message .message-bubble {
             background: var(--bg-tertiary);
             text-align: center;
-            max-width: 320px;
+            max-width: 300px;
             border: 1px solid var(--primary-400);
-            padding: 24px;
-            box-shadow: 0 0 30px var(--accent-glow);
-        }
-
-        .welcome-message .message-bubble::before {
-            display: none;
+            padding: 20px;
         }
 
         .welcome-message i {
-            font-size: 40px;
+            font-size: 30px;
             color: var(--primary-400);
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
-        .welcome-message h3 {
-            font-size: 18px;
-            margin-bottom: 8px;
-            color: var(--primary-200);
-        }
-
-        .welcome-message p {
-            color: var(--text-tertiary);
-            font-size: 14px;
-        }
-
-        /* Input Area */
+        /* Input Area - CORRIGIDO */
         .input-area {
-            padding: 16px 24px;
-            padding-bottom: max(16px, var(--safe-area-inset-bottom));
+            padding: 15px 20px;
+            padding-bottom: max(15px, var(--safe-area-inset-bottom));
             background: var(--bg-secondary);
             border-top: 1px solid var(--border-medium);
             display: flex;
-            gap: 12px;
+            gap: 10px;
             align-items: center;
             flex-shrink: 0;
-            width: 100%;
         }
 
         .emoji-btn {
-            width: 48px;
-            height: 48px;
+            width: 45px;
+            height: 45px;
             background: var(--bg-tertiary);
             border: 1px solid var(--border-medium);
             border-radius: 50%;
@@ -988,23 +616,21 @@
             justify-content: center;
             transition: var(--transition-base);
             flex-shrink: 0;
-            font-size: 22px;
         }
 
         .emoji-btn:hover {
             border-color: var(--primary-400);
             color: var(--primary-400);
-            transform: scale(1.1);
         }
 
         .message-input {
             flex: 1;
-            padding: 14px 20px;
+            padding: 12px 18px;
             background: var(--bg-tertiary);
             border: 1px solid var(--border-medium);
             border-radius: var(--radius-full);
             color: var(--text-primary);
-            font-size: 15px;
+            font-size: 14px;
             transition: var(--transition-base);
             min-width: 0;
         }
@@ -1013,7 +639,6 @@
             outline: none;
             border-color: var(--primary-400);
             box-shadow: 0 0 0 3px rgba(124, 93, 240, 0.2);
-            background: var(--bg-elevated);
         }
 
         .message-input::placeholder {
@@ -1021,8 +646,8 @@
         }
 
         .send-btn {
-            width: 48px;
-            height: 48px;
+            width: 45px;
+            height: 45px;
             background: linear-gradient(135deg, var(--primary-500), var(--primary-400));
             border: none;
             border-radius: 50%;
@@ -1031,35 +656,29 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 15px var(--accent-glow);
+            box-shadow: 0 3px 12px var(--accent-glow);
             transition: var(--transition-base);
             flex-shrink: 0;
-            font-size: 18px;
         }
 
         .send-btn:hover {
-            transform: scale(1.1) rotate(5deg);
-            box-shadow: 0 8px 25px var(--accent-glow);
-        }
-
-        .send-btn:active {
-            transform: scale(0.95);
+            transform: scale(1.1);
+            box-shadow: 0 5px 20px var(--accent-glow);
         }
 
         /* Emoji Picker */
         .emoji-picker {
             position: absolute;
             bottom: calc(80px + var(--safe-area-inset-bottom));
-            right: 24px;
-            width: 320px;
+            right: 20px;
+            width: 300px;
             background: var(--bg-elevated);
             border: 1px solid var(--border-medium);
             border-radius: var(--radius-lg);
-            padding: 16px;
+            padding: 15px;
             box-shadow: var(--shadow-xl);
             display: none;
             z-index: 1000;
-            backdrop-filter: blur(10px);
         }
 
         .emoji-picker.show {
@@ -1069,99 +688,64 @@
 
         .emoji-categories {
             display: flex;
-            gap: 6px;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
+            gap: 5px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
             border-bottom: 1px solid var(--border-medium);
         }
 
         .emoji-cat {
             flex: 1;
-            padding: 8px;
+            padding: 5px;
             background: var(--bg-tertiary);
             border: 1px solid var(--border-medium);
             border-radius: var(--radius-md);
             color: var(--text-tertiary);
-            font-size: 18px;
+            font-size: 16px;
             cursor: pointer;
-            transition: var(--transition-base);
-        }
-
-        .emoji-cat:hover {
-            border-color: var(--primary-400);
-            transform: translateY(-2px);
         }
 
         .emoji-cat.active {
             background: var(--primary-400);
             color: white;
-            border-color: var(--primary-400);
         }
 
         .emoji-grid {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
-            gap: 6px;
-            max-height: 160px;
+            gap: 5px;
+            max-height: 150px;
             overflow-y: auto;
         }
 
         .emoji-grid span {
-            font-size: 24px;
-            padding: 6px;
+            font-size: 20px;
+            padding: 5px;
             text-align: center;
             cursor: pointer;
             border-radius: var(--radius-md);
-            transition: var(--transition-base);
         }
 
         .emoji-grid span:hover {
             background: var(--primary-400);
-            transform: scale(1.2);
+            transform: scale(1.1);
         }
-
-        /* Typing Indicator */
-        .typing-indicator {
-            display: flex;
-            gap: 4px;
-            padding: 8px 12px;
-            background: var(--bg-tertiary);
-            border-radius: var(--radius-full);
-            width: fit-content;
-        }
-
-        .typing-indicator span {
-            width: 8px;
-            height: 8px;
-            background: var(--text-tertiary);
-            border-radius: 50%;
-            animation: typing 1.4s infinite;
-        }
-
-        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
-        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
 
         /* Scrollbar */
         ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+            width: 5px;
         }
 
         ::-webkit-scrollbar-track {
             background: var(--bg-tertiary);
-            border-radius: var(--radius-full);
         }
 
         ::-webkit-scrollbar-thumb {
-            background: linear-gradient(to bottom, var(--primary-400), var(--primary-500));
+            background: var(--primary-400);
             border-radius: var(--radius-full);
         }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-300);
-        }
-
-        /* ===== MOBILE OTIMIZADO ===== */
+        /* ===== MOBILE ===== */
         @media (max-width: 768px) {
             .chat-screen {
                 flex-direction: column;
@@ -1173,25 +757,20 @@
                 max-height: 35vh;
                 border-right: none;
                 border-bottom: 1px solid var(--border-medium);
-                padding-bottom: 0;
             }
 
             .sidebar-header {
-                padding: 16px;
-            }
-
-            .sidebar-header h2 {
-                font-size: 18px;
+                padding: 12px 15px;
             }
 
             .user-profile-card {
                 padding: 12px;
-                margin: 12px;
+                margin: 10px;
             }
 
             .profile-avatar {
-                width: 44px;
-                height: 44px;
+                width: 40px;
+                height: 40px;
             }
 
             .profile-info h3 {
@@ -1199,136 +778,70 @@
             }
 
             .online-section {
-                padding: 0 12px;
+                padding: 0 10px;
             }
 
             .members-list {
                 display: flex;
                 flex-direction: row;
                 flex-wrap: wrap;
-                gap: 8px;
+                gap: 6px;
             }
 
             .member-item {
-                flex: 0 0 calc(50% - 4px);
-                padding: 10px;
-            }
-
-            .member-avatar {
-                width: 32px;
-                height: 32px;
-            }
-
-            .member-name {
-                font-size: 12px;
+                flex: 0 0 calc(50% - 3px);
+                padding: 8px;
             }
 
             .logout-btn {
-                margin: 12px;
-                margin-bottom: max(12px, var(--safe-area-inset-bottom));
-                padding: 12px;
+                margin: 10px;
+                padding: 10px;
             }
 
             .chat-main {
-                flex: 1;
-                min-height: 0;
+                height: 65vh;
+                flex: none;
             }
 
             .chat-header {
-                padding: 12px 16px;
-                padding-top: max(12px, var(--safe-area-inset-top));
+                padding: 10px 15px;
             }
 
             .chat-title h2 {
                 font-size: 16px;
             }
 
-            .chat-badge {
-                font-size: 10px;
-            }
-
-            .action-btn {
-                width: 40px;
-                height: 40px;
-                font-size: 18px;
-            }
-
             .messages-container {
-                padding: 16px;
+                padding: 15px;
+                height: calc(65vh - 110px);
             }
 
             .message-bubble {
                 max-width: 85%;
-                padding: 10px 14px;
-            }
-
-            .message-text {
-                font-size: 13px;
+                padding: 10px 12px;
             }
 
             .input-area {
-                padding: 12px 16px;
-                padding-bottom: max(12px, var(--safe-area-inset-bottom));
-                gap: 8px;
+                padding: 10px 15px;
+                position: sticky;
+                bottom: 0;
             }
 
             .emoji-btn, .send-btn {
-                width: 44px;
-                height: 44px;
-                font-size: 20px;
+                width: 42px;
+                height: 42px;
             }
 
             .message-input {
-                padding: 12px 16px;
-                font-size: 14px;
+                padding: 10px 15px;
+                font-size: 13px;
             }
 
             .emoji-picker {
                 bottom: calc(70px + var(--safe-area-inset-bottom));
-                right: 12px;
-                width: calc(100% - 24px);
+                right: 10px;
+                width: calc(100% - 20px);
                 max-width: 300px;
-            }
-
-            .emoji-grid span {
-                font-size: 22px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .member-item {
-                flex: 0 0 100%;
-            }
-            
-            .chat-sidebar {
-                max-height: 30vh;
-            }
-            
-            .message-bubble {
-                max-width: 90%;
-            }
-        }
-
-        @media (max-width: 380px) {
-            .member-item {
-                width: 100%;
-            }
-            
-            .input-area {
-                gap: 5px;
-            }
-            
-            .emoji-btn, .send-btn {
-                width: 40px;
-                height: 40px;
-            }
-        }
-
-        /* Suporte para navegadores sem env() */
-        @supports not (padding-bottom: env(safe-area-inset-bottom)) {
-            :root {
-                --safe-area-inset-bottom: 0px;
-                --safe-area-inset-top: 0px;
             }
         }
     </style>
@@ -1368,7 +881,7 @@
 
                 <button class="btn-primary" onclick="fazerLogin()">
                     <i class="fas fa-arrow-right"></i>
-                    <span>Entrar na Irmandade</span>
+                    <span>Entrar</span>
                 </button>
             </div>
 
@@ -1396,25 +909,25 @@
                 </div>
 
                 <div class="avatar-selection">
-                    <label>Escolha seu avatar:</label>
+                    <label style="color: var(--text-secondary); font-size: 14px; margin-bottom: 10px; display: block;">Escolha seu avatar:</label>
                     <div class="avatar-grid" id="avatarGrid">
                         <div class="avatar-option selected" data-seed="avatar1">
-                            <img src="assets/avatar1.png" alt="Avatar 1" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=avatar1&backgroundColor=5f3dc3'">
+                            <img src="assets/avatar1.png" alt="Avatar 1" onerror="this.src='https://via.placeholder.com/50/5f3dc3/ffffff?text=A1'">
                         </div>
                         <div class="avatar-option" data-seed="avatar2">
-                            <img src="assets/avatar2.png" alt="Avatar 2" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=avatar2&backgroundColor=7c5df0'">
+                            <img src="assets/avatar2.png" alt="Avatar 2" onerror="this.src='https://via.placeholder.com/50/7c5df0/ffffff?text=A2'">
                         </div>
                         <div class="avatar-option" data-seed="avatar3">
-                            <img src="assets/avatar3.png" alt="Avatar 3" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=avatar3&backgroundColor=5f3dc3'">
+                            <img src="assets/avatar3.png" alt="Avatar 3" onerror="this.src='https://via.placeholder.com/50/5f3dc3/ffffff?text=A3'">
                         </div>
                         <div class="avatar-option" data-seed="avatar4">
-                            <img src="assets/avatar4.png" alt="Avatar 4" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=avatar4&backgroundColor=7c5df0'">
+                            <img src="assets/avatar4.png" alt="Avatar 4" onerror="this.src='https://via.placeholder.com/50/7c5df0/ffffff?text=A4'">
                         </div>
                         <div class="avatar-option" data-seed="avatar5">
-                            <img src="assets/avatar5.png" alt="Avatar 5" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=avatar5&backgroundColor=5f3dc3'">
+                            <img src="assets/avatar5.png" alt="Avatar 5" onerror="this.src='https://via.placeholder.com/50/5f3dc3/ffffff?text=A5'">
                         </div>
                         <div class="avatar-option" data-seed="avatar6">
-                            <img src="assets/avatar6.png" alt="Avatar 6" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=avatar6&backgroundColor=7c5df0'">
+                            <img src="assets/avatar6.png" alt="Avatar 6" onerror="this.src='https://via.placeholder.com/50/7c5df0/ffffff?text=A6'">
                         </div>
                     </div>
                 </div>
@@ -1423,7 +936,7 @@
 
                 <button class="btn-primary" onclick="criarConta()">
                     <i class="fas fa-user-plus"></i>
-                    <span>Criar Conta</span>
+                    <span>Criar conta</span>
                 </button>
             </div>
         </div>
@@ -1464,11 +977,11 @@
 
             <button class="logout-btn" id="logoutBtn">
                 <i class="fas fa-sign-out-alt"></i>
-                <span>Sair da Irmandade</span>
+                <span>Sair</span>
             </button>
         </div>
 
-        <!-- Chat Principal -->
+        <!-- Chat Principal - AGORA VISÍVEL -->
         <div class="chat-main">
             <div class="chat-header">
                 <div class="chat-title">
@@ -1476,7 +989,7 @@
                         <i class="fas fa-comment-dots"></i>
                         Chat Geral
                     </h2>
-                    <span class="chat-badge">⚔️ irmandade ativa</span>
+                    <span class="chat-badge">⚔️ ativo</span>
                 </div>
                 <div class="chat-actions">
                     <button class="action-btn" id="emojiToggleBtn">
@@ -1490,11 +1003,12 @@
                     <div class="message-bubble">
                         <i class="fas fa-shield-cross"></i>
                         <h3>Bem-vindo ao templo!</h3>
-                        <p>Que a honra guie suas palavras, irmão.</p>
+                        <p>Que a honra guie suas palavras</p>
                     </div>
                 </div>
             </div>
 
+            <!-- BARRA DE DIGITAÇÃO - AGORA VISÍVEL -->
             <div class="input-area">
                 <button class="emoji-btn" id="emojiBtn">
                     <i class="far fa-laugh"></i>
@@ -1526,20 +1040,13 @@
             const SUPABASE_KEY = 'sb_publishable_UrxALLkgzzTBDNpQxSypBQ_7dJMQpsj';
 
             // Criar cliente Supabase
-            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-                realtime: {
-                    params: {
-                        eventsPerSecond: 10
-                    }
-                }
-            });
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
             // ===== VARIÁVEIS GLOBAIS =====
             let usuarioAtual = null;
             let mensagensSubscription = null;
             let membrosSubscription = null;
             let ultimaMensagemId = null;
-            let heartbeatInterval = null;
 
             // ===== UTILITÁRIOS =====
             function escaparHTML(texto) {
@@ -1554,13 +1061,6 @@
 
             function mostrarSucesso(mensagem) {
                 alert('✅ ' + mensagem);
-            }
-
-            function formatarHora(data) {
-                return new Date(data).toLocaleTimeString('pt-BR', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
             }
 
             // ===== SISTEMA DE LOGIN =====
@@ -1648,7 +1148,6 @@
 
                     sessionStorage.setItem('templario_user', JSON.stringify(usuarioAtual));
 
-                    // Atualizar status online
                     await supabase
                         .from('usuarios')
                         .update({ 
@@ -1688,7 +1187,6 @@
                 }
 
                 try {
-                    // Verificar se usuário já existe
                     const { data: existente, error: checkError } = await supabase
                         .from('usuarios')
                         .select('nome')
@@ -1764,18 +1262,14 @@
                 // Configurar emojis
                 configurarEmojis();
 
-                // Heartbeat para manter online
+                // Heartbeat
                 iniciarHeartbeat();
-
-                // Scroll para o final
-                scrollToBottom();
             }
 
             // ===== TEMPO REAL =====
             function setupRealtime() {
                 console.log('🎯 Configurando tempo real...');
                 
-                // Remover subscriptions anteriores
                 if (mensagensSubscription) {
                     supabase.removeChannel(mensagensSubscription);
                 }
@@ -1783,7 +1277,6 @@
                     supabase.removeChannel(membrosSubscription);
                 }
                 
-                // Canal para mensagens
                 mensagensSubscription = supabase
                     .channel('mensagens')
                     .on(
@@ -1803,11 +1296,8 @@
                             }
                         }
                     )
-                    .subscribe((status) => {
-                        console.log('📡 Status Mensagens:', status);
-                    });
+                    .subscribe();
 
-                // Canal para membros
                 membrosSubscription = supabase
                     .channel('membros')
                     .on(
@@ -1817,23 +1307,15 @@
                             schema: 'public', 
                             table: 'usuarios' 
                         },
-                        (payload) => {
-                            console.log('👥 Atualização de membros:', payload);
+                        () => {
                             carregarMembros();
                         }
                     )
-                    .subscribe((status) => {
-                        console.log('📡 Status Membros:', status);
-                    });
+                    .subscribe();
             }
 
-            // Heartbeat
             function iniciarHeartbeat() {
-                if (heartbeatInterval) {
-                    clearInterval(heartbeatInterval);
-                }
-                
-                heartbeatInterval = setInterval(async () => {
+                setInterval(async () => {
                     if (usuarioAtual) {
                         await supabase
                             .from('usuarios')
@@ -1843,10 +1325,9 @@
                             })
                             .eq('id', usuarioAtual.id);
                     }
-                }, 25000);
+                }, 30000);
             }
 
-            // Configurar eventos
             function configurarEventos() {
                 document.getElementById('sendBtn').addEventListener('click', enviarMensagem);
                 document.getElementById('messageInput').addEventListener('keypress', (e) => {
@@ -1866,11 +1347,6 @@
                             })
                             .eq('id', usuarioAtual.id);
                     }
-                    
-                    if (heartbeatInterval) {
-                        clearInterval(heartbeatInterval);
-                    }
-                    
                     sessionStorage.removeItem('templario_user');
                     window.location.reload();
                 });
@@ -1906,9 +1382,9 @@
 
             function configurarEmojis() {
                 const emojiData = {
-                    smileys: ['😊', '😂', '🥰', '😎', '🤔', '😴', '🥳', '😱', '🤗', '😡', '😭', '🤯', '🥺', '😈', '👻', '💀', '👽', '🤖', '🎃', '😺'],
-                    gestures: ['👋', '✌️', '🤞', '👍', '👎', '👊', '✊', '🤛', '🤜', '🤝', '👏', '🙌', '👐', '🤲', '🙏', '💪', '🤳', '👀', '👂', '👃'],
-                    hearts: ['❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '💔', '❤️‍🔥', '❤️‍🩹', '💕', '💞', '💓', '💗', '💖', '💘', '💝', '💟']
+                    smileys: ['😊', '😂', '🥰', '😎', '🤔', '😴', '🥳', '😱', '🤗', '😡', '😭', '🤯', '🥺', '😈', '👻', '💀'],
+                    gestures: ['👋', '✌️', '🤞', '👍', '👎', '👊', '✊', '🤛', '🤜', '🤝', '👏', '🙌', '🙏', '💪'],
+                    hearts: ['❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '💔', '💕', '💞', '💓', '💗']
                 };
 
                 window.carregarEmojis = function(categoria = 'smileys') {
@@ -1919,10 +1395,9 @@
                         const span = document.createElement('span');
                         span.textContent = emoji;
                         span.onclick = () => {
-                            const input = document.getElementById('messageInput');
-                            input.value += emoji;
-                            input.focus();
+                            document.getElementById('messageInput').value += emoji;
                             document.getElementById('emojiPicker').classList.remove('show');
+                            document.getElementById('messageInput').focus();
                         };
                         grid.appendChild(span);
                     });
@@ -1954,6 +1429,7 @@
                             ultimaMensagemId = msg.id;
                             adicionarMensagem(msg);
                         });
+                        scrollToBottom();
                     }
                 } catch (error) {
                     console.error('Erro ao carregar mensagens:', error);
@@ -1963,7 +1439,6 @@
             function adicionarMensagem(msg) {
                 const container = document.getElementById('messagesContainer');
                 
-                // Verificar duplicatas
                 const mensagemExistente = Array.from(container.querySelectorAll('.message')).some(el => {
                     const autor = el.querySelector('.message-author')?.textContent;
                     const texto = el.querySelector('.message-text')?.textContent;
@@ -1974,10 +1449,10 @@
 
                 const isSentByMe = msg.usuario_id === usuarioAtual?.id;
                 const isAdmin = msg.usuario_nome === 'Pedrinho Gameplays' || msg.is_admin;
+                const time = new Date(msg.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
                 const messageDiv = document.createElement('div');
                 messageDiv.className = `message ${isSentByMe ? 'sent' : 'received'}`;
-
                 messageDiv.innerHTML = `
                     <div class="message-bubble">
                         <div class="message-header">
@@ -1986,7 +1461,7 @@
                                 ${escaparHTML(msg.usuario_nome)}
                                 ${isAdmin ? '👑' : ''}
                             </span>
-                            <span class="message-time">${formatarHora(msg.created_at)}</span>
+                            <span class="message-time">${time}</span>
                         </div>
                         <div class="message-text">
                             ${escaparHTML(msg.mensagem)}
@@ -2065,7 +1540,6 @@
 
                         const memberDiv = document.createElement('div');
                         memberDiv.className = `member-item ${user.nome === 'Pedrinho Gameplays' ? 'admin' : ''}`;
-
                         memberDiv.innerHTML = `
                             <img src="${user.avatar_url || 'assets/avatar1.png'}" class="member-avatar" onerror="this.src='assets/avatar1.png'">
                             <div class="member-info">
@@ -2079,7 +1553,6 @@
                                 </div>
                             </div>
                         `;
-
                         membersList.appendChild(memberDiv);
                     });
 
@@ -2091,13 +1564,9 @@
 
             function scrollToBottom() {
                 const container = document.getElementById('messagesContainer');
-                container.scrollTo({
-                    top: container.scrollHeight,
-                    behavior: 'smooth'
-                });
+                container.scrollTop = container.scrollHeight;
             }
 
-            // Cleanup
             window.addEventListener('beforeunload', async () => {
                 if (usuarioAtual) {
                     await supabase
@@ -2107,10 +1576,6 @@
                             last_seen: new Date().toISOString()
                         })
                         .eq('id', usuarioAtual.id);
-                }
-                
-                if (heartbeatInterval) {
-                    clearInterval(heartbeatInterval);
                 }
             });
         })();
