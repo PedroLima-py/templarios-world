@@ -51,6 +51,7 @@
             --error: #ef4444;
 
             --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.6);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.4);
 
             --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
 
@@ -68,7 +69,7 @@
             font-family: 'Inter', sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
-            height: 100dvh; /* ✅ CORRIGIDO: dvh em vez de vh */
+            height: 100dvh;
             overflow: hidden;
         }
 
@@ -83,7 +84,7 @@
 
         /* ===== TELA DE LOGIN ===== */
         .login-screen {
-            height: 100dvh; /* ✅ CORRIGIDO: dvh em vez de vh */
+            height: 100dvh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -258,9 +259,9 @@
             box-shadow: 0 5px 20px var(--accent-glow);
         }
 
-        /* ===== TELA DO CHAT - CORRIGIDA ===== */
+        /* ===== TELA DO CHAT ===== */
         .chat-screen {
-            height: 100dvh; /* ✅ CORRIGIDO: dvh em vez de vh */
+            height: 100dvh;
             display: flex;
             background: var(--bg-primary);
             overflow: hidden;
@@ -273,7 +274,7 @@
             border-right: 1px solid var(--border-medium);
             display: flex;
             flex-direction: column;
-            height: 100dvh; /* ✅ CORRIGIDO: dvh em vez de vh */
+            height: 100dvh;
             overflow-y: auto;
             flex-shrink: 0;
         }
@@ -440,12 +441,12 @@
             border-color: var(--error);
         }
 
-        /* Chat Main - CORRIGIDO E SIMPLIFICADO */
+        /* Chat Main */
         .chat-main {
             flex: 1;
             display: flex;
             flex-direction: column;
-            height: 100dvh; /* ✅ CORRIGIDO: dvh em vez de vh */
+            height: 100dvh;
             background: var(--bg-primary);
             min-width: 0;
         }
@@ -467,36 +468,7 @@
             gap: 10px;
         }
 
-        .chat-badge {
-            background: var(--bg-elevated);
-            color: var(--text-tertiary);
-            font-size: 11px;
-            padding: 3px 10px;
-            border-radius: var(--radius-full);
-            display: inline-block;
-            margin-top: 3px;
-        }
-
-        .action-btn {
-            width: 40px;
-            height: 40px;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-medium);
-            border-radius: 50%;
-            color: var(--text-tertiary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition-base);
-        }
-
-        .action-btn:hover {
-            border-color: var(--primary-400);
-            color: var(--primary-400);
-        }
-
-        /* Messages Area - CORRIGIDO */
+        /* Messages Area */
         .messages-container {
             flex: 1;
             padding: 20px;
@@ -591,24 +563,25 @@
             margin-bottom: 10px;
         }
 
-        /* Input Area - CORRIGIDO */
+        /* ===== BARRA DE DIGITAÇÃO REDESIGN ===== */
         .input-area {
-            padding: 15px 20px;
-            padding-bottom: max(15px, var(--safe-area-inset-bottom));
+            padding: 20px 25px;
+            padding-bottom: max(20px, var(--safe-area-inset-bottom));
             background: var(--bg-secondary);
             border-top: 1px solid var(--border-medium);
             display: flex;
-            gap: 10px;
+            gap: 15px;
             align-items: center;
             flex-shrink: 0;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.2);
         }
 
         .emoji-btn {
-            width: 45px;
-            height: 45px;
+            width: 48px;
+            height: 48px;
             background: var(--bg-tertiary);
-            border: 1px solid var(--border-medium);
-            border-radius: 50%;
+            border: 2px solid var(--border-medium);
+            border-radius: var(--radius-full);
             color: var(--text-tertiary);
             cursor: pointer;
             display: flex;
@@ -616,38 +589,44 @@
             justify-content: center;
             transition: var(--transition-base);
             flex-shrink: 0;
+            font-size: 1.3rem;
         }
 
         .emoji-btn:hover {
             border-color: var(--primary-400);
             color: var(--primary-400);
+            transform: scale(1.05);
+            background: var(--bg-elevated);
         }
 
         .message-input {
             flex: 1;
-            padding: 12px 18px;
+            padding: 14px 22px;
             background: var(--bg-tertiary);
-            border: 1px solid var(--border-medium);
+            border: 2px solid var(--border-medium);
             border-radius: var(--radius-full);
             color: var(--text-primary);
-            font-size: 14px;
+            font-size: 15px;
             transition: var(--transition-base);
             min-width: 0;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
         .message-input:focus {
             outline: none;
             border-color: var(--primary-400);
-            box-shadow: 0 0 0 3px rgba(124, 93, 240, 0.2);
+            box-shadow: 0 0 0 4px rgba(124, 93, 240, 0.15), inset 0 2px 5px rgba(0, 0, 0, 0.2);
+            background: var(--bg-elevated);
         }
 
         .message-input::placeholder {
             color: var(--text-muted);
+            font-weight: 400;
         }
 
         .send-btn {
-            width: 45px;
-            height: 45px;
+            width: 52px;
+            height: 52px;
             background: linear-gradient(135deg, var(--primary-500), var(--primary-400));
             border: none;
             border-radius: 50%;
@@ -656,22 +635,27 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 3px 12px var(--accent-glow);
+            box-shadow: 0 4px 15px var(--accent-glow);
             transition: var(--transition-base);
             flex-shrink: 0;
+            font-size: 1.3rem;
         }
 
         .send-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 5px 20px var(--accent-glow);
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 8px 25px var(--accent-glow);
+        }
+
+        .send-btn:active {
+            transform: scale(0.95);
         }
 
         /* Emoji Picker */
         .emoji-picker {
             position: absolute;
-            bottom: calc(80px + var(--safe-area-inset-bottom));
-            right: 20px;
-            width: 300px;
+            bottom: calc(90px + var(--safe-area-inset-bottom));
+            right: 30px;
+            width: 320px;
             background: var(--bg-elevated);
             border: 1px solid var(--border-medium);
             border-radius: var(--radius-lg);
@@ -703,6 +687,12 @@
             color: var(--text-tertiary);
             font-size: 16px;
             cursor: pointer;
+            transition: var(--transition-base);
+        }
+
+        .emoji-cat:hover {
+            background: var(--primary-400);
+            color: white;
         }
 
         .emoji-cat.active {
@@ -719,16 +709,17 @@
         }
 
         .emoji-grid span {
-            font-size: 20px;
+            font-size: 22px;
             padding: 5px;
             text-align: center;
             cursor: pointer;
             border-radius: var(--radius-md);
+            transition: var(--transition-base);
         }
 
         .emoji-grid span:hover {
             background: var(--primary-400);
-            transform: scale(1.1);
+            transform: scale(1.15);
         }
 
         /* Scrollbar */
@@ -754,7 +745,7 @@
             .chat-sidebar {
                 width: 100%;
                 height: auto;
-                max-height: 35dvh; /* ✅ CORRIGIDO: dvh em vez de vh */
+                max-height: 35dvh;
                 border-right: none;
                 border-bottom: 1px solid var(--border-medium);
             }
@@ -799,7 +790,7 @@
             }
 
             .chat-main {
-                height: 65dvh; /* ✅ CORRIGIDO: dvh em vez de vh */
+                height: 65dvh;
                 flex: none;
             }
 
@@ -813,7 +804,7 @@
 
             .messages-container {
                 padding: 15px;
-                height: calc(65dvh - 110px); /* ✅ CORRIGIDO: dvh em vez de vh */
+                height: calc(65dvh - 110px);
             }
 
             .message-bubble {
@@ -822,19 +813,19 @@
             }
 
             .input-area {
-                padding: 10px 15px;
-                position: sticky;
-                bottom: 0;
+                padding: 12px 15px;
+                gap: 10px;
             }
 
             .emoji-btn, .send-btn {
                 width: 42px;
                 height: 42px;
+                font-size: 1.1rem;
             }
 
             .message-input {
                 padding: 10px 15px;
-                font-size: 13px;
+                font-size: 14px;
             }
 
             .emoji-picker {
@@ -982,14 +973,15 @@
         </div>
 
         <!-- Chat Principal -->
-    <div class="chat-header">
-        <div class="chat-title">
-            <h2>
-                <i class="fas fa-comment-dots"></i>
-                Chat Geral
-            </h2>
-        </div>
-    </div>
+        <div class="chat-main">
+            <div class="chat-header">
+                <div class="chat-title">
+                    <h2>
+                        <i class="fas fa-comment-dots"></i>
+                        Chat Geral
+                    </h2>
+                </div>
+            </div>
 
             <div class="messages-container" id="messagesContainer">
                 <div class="message welcome-message">
@@ -1001,7 +993,7 @@
                 </div>
             </div>
 
-            <!-- BARRA DE DIGITAÇÃO - AGORA VISÍVEL -->
+            <!-- BARRA DE DIGITAÇÃO REDESIGN -->
             <div class="input-area">
                 <button class="emoji-btn" id="emojiBtn">
                     <i class="far fa-laugh"></i>
@@ -1250,11 +1242,11 @@
                 // Carregar mensagens
                 await carregarMensagens();
 
-                // Carregar membros
-                await carregarMembros();
-
                 // Configurar tempo real
                 setupRealtime();
+
+                // Carregar membros (já vai atualizar via realtime)
+                await carregarMembros();
 
                 // Configurar eventos
                 configurarEventos();
@@ -1344,6 +1336,8 @@
                                 last_seen: new Date().toISOString()
                             })
                             .eq('id', usuarioAtual.id);
+                        
+                        console.log('💓 Heartbeat enviado');
                     }
                 }, 15000);
             }
@@ -1372,22 +1366,18 @@
                     window.location.reload();
                 });
 
-                // Emoji picker
-                const emojiToggle = document.getElementById('emojiToggleBtn');
+                // Emoji picker (agora apenas com um botão)
                 const emojiBtn = document.getElementById('emojiBtn');
                 const emojiPicker = document.getElementById('emojiPicker');
 
-                [emojiToggle, emojiBtn].forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        emojiPicker.classList.toggle('show');
-                    });
+                emojiBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    emojiPicker.classList.toggle('show');
                 });
 
                 document.addEventListener('click', (e) => {
                     if (!e.target.closest('.emoji-picker') && 
-                        !e.target.closest('.emoji-btn') && 
-                        !e.target.closest('#emojiToggleBtn')) {
+                        !e.target.closest('.emoji-btn')) {
                         emojiPicker.classList.remove('show');
                     }
                 });
@@ -1536,7 +1526,7 @@
                     const { data, error } = await supabase
                         .from('usuarios')
                         .select('*')
-                        .order('last_seen', { ascending: false }); // Mais recentes primeiro
+                        .order('last_seen', { ascending: false });
 
                     if (error) {
                         console.error('Erro ao carregar membros:', error);
@@ -1584,7 +1574,7 @@
                 container.scrollTop = container.scrollHeight;
             }
 
-            // Cleanup ao sair da página (opcional, não essencial)
+            // Cleanup ao sair da página
             window.addEventListener('beforeunload', () => {
                 if (heartbeatInterval) {
                     clearInterval(heartbeatInterval);
