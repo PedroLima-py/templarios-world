@@ -68,7 +68,7 @@
             font-family: 'Inter', sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
-            height: 100vh;
+            height: 100dvh; /* ✅ CORRIGIDO: dvh em vez de vh */
             overflow: hidden;
         }
 
@@ -83,7 +83,7 @@
 
         /* ===== TELA DE LOGIN ===== */
         .login-screen {
-            height: 100vh;
+            height: 100dvh; /* ✅ CORRIGIDO: dvh em vez de vh */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -260,7 +260,7 @@
 
         /* ===== TELA DO CHAT - CORRIGIDA ===== */
         .chat-screen {
-            height: 100vh;
+            height: 100dvh; /* ✅ CORRIGIDO: dvh em vez de vh */
             display: flex;
             background: var(--bg-primary);
             overflow: hidden;
@@ -273,7 +273,7 @@
             border-right: 1px solid var(--border-medium);
             display: flex;
             flex-direction: column;
-            height: 100vh;
+            height: 100dvh; /* ✅ CORRIGIDO: dvh em vez de vh */
             overflow-y: auto;
             flex-shrink: 0;
         }
@@ -445,7 +445,7 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            height: 100vh;
+            height: 100dvh; /* ✅ CORRIGIDO: dvh em vez de vh */
             background: var(--bg-primary);
             min-width: 0;
         }
@@ -754,7 +754,7 @@
             .chat-sidebar {
                 width: 100%;
                 height: auto;
-                max-height: 35vh;
+                max-height: 35dvh; /* ✅ CORRIGIDO: dvh em vez de vh */
                 border-right: none;
                 border-bottom: 1px solid var(--border-medium);
             }
@@ -799,7 +799,7 @@
             }
 
             .chat-main {
-                height: 65vh;
+                height: 65dvh; /* ✅ CORRIGIDO: dvh em vez de vh */
                 flex: none;
             }
 
@@ -813,7 +813,7 @@
 
             .messages-container {
                 padding: 15px;
-                height: calc(65vh - 110px);
+                height: calc(65dvh - 110px); /* ✅ CORRIGIDO: dvh em vez de vh */
             }
 
             .message-bubble {
@@ -981,22 +981,15 @@
             </button>
         </div>
 
-        <!-- Chat Principal - AGORA VISÍVEL -->
-        <div class="chat-main">
-            <div class="chat-header">
-                <div class="chat-title">
-                    <h2>
-                        <i class="fas fa-comment-dots"></i>
-                        Chat Geral
-                    </h2>
-                    <span class="chat-badge">⚔️ ativo</span>
-                </div>
-                <div class="chat-actions">
-                    <button class="action-btn" id="emojiToggleBtn">
-                        <i class="far fa-smile"></i>
-                    </button>
-                </div>
-            </div>
+        <!-- Chat Principal -->
+    <div class="chat-header">
+        <div class="chat-title">
+            <h2>
+                <i class="fas fa-comment-dots"></i>
+                Chat Geral
+            </h2>
+        </div>
+    </div>
 
             <div class="messages-container" id="messagesContainer">
                 <div class="message welcome-message">
