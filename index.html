@@ -1143,7 +1143,7 @@
                     <i class="far fa-laugh"></i>
                 </button>
                 
-                <!-- NOVO: Botão de áudio -->
+                <!-- Botão de áudio -->
                 <button class="audio-btn" id="audioBtn">
                     <i class="fas fa-microphone"></i>
                 </button>
@@ -1227,51 +1227,84 @@
                 alert('✅ ' + mensagem);
             }
 
-            // ===== VERIFICA SE USUÁRIO ESTÁ ONLINE (BASEADO NO LAST_SEEN) =====
+            // ===== VERIFICA SE USUÁRIO ESTÁ ONLINE =====
             function isOnline(lastSeen) {
                 if (!lastSeen) return false;
                 const diffSeconds = (Date.now() - new Date(lastSeen)) / 1000;
-                return diffSeconds < 30; // 30 segundos de tolerância
+                return diffSeconds < 30;
             }
 
-            // ===== FUNÇÕES DE ÁUDIO =====
+            // ===== FUNÇÕES DE ÁUDIO CORRIGIDAS =====
             async function comecarGravacaoAudio() {
                 try {
+                    console.log('🎤 Solicitando permissão do microfone...');
+                    
+                    // Verificar suporte
+                    if (!navigator.mediaDevices || !window.MediaRecorder) {
+                        mostrarErro('Seu navegador não suporta gravação de áudio');
+                        return;
+                    }
+                    
                     // Pede permissão pro microfone
                     audioStream = await navigator.mediaDevices.getUserMedia({ 
                         audio: {
                             echoCancellation: true,
                             noiseSuppression: true,
-                            sampleRate: 24000, // Qualidade boa, tamanho médio
+                            sampleRate: 24000,
                         } 
                     });
                     
+                    console.log('✅ Microfone OK');
+                    
+                    // Detectar formato suportado
+                    const mimeTypes = [
+                        'audio/webm',
+                        'audio/webm;codecs=opus',
+                        'audio/ogg;codecs=opus',
+                        'audio/mp4'
+                    ];
+                    
+                    let selectedMimeType = 'audio/webm';
+                    for (let type of mimeTypes) {
+                        if (MediaRecorder.isTypeSupported(type)) {
+                            selectedMimeType = type;
+                            console.log('✅ Formato suportado:', type);
+                            break;
+                        }
+                    }
+                    
                     // Configurar gravador
                     mediaRecorder = new MediaRecorder(audioStream, {
-                        mimeType: 'audio/webm' // Formato suportado por todos
+                        mimeType: selectedMimeType
                     });
                     
                     audioChunks = [];
                     
                     mediaRecorder.ondataavailable = (event) => {
-                        audioChunks.push(event.data);
+                        if (event.data.size > 0) {
+                            audioChunks.push(event.data);
+                        }
                     };
                     
                     mediaRecorder.onstop = async () => {
+                        console.log('⏹️ Gravação parada');
+                        
                         // Parar todas as tracks do microfone
                         if (audioStream) {
                             audioStream.getTracks().forEach(track => track.stop());
+                            audioStream = null;
                         }
                         
                         // Criar blob do áudio
-                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        const audioBlob = new Blob(audioChunks, { type: selectedMimeType });
+                        console.log('📦 Blob criado:', audioBlob.size, 'bytes');
                         
                         // Mostrar preview
                         mostrarPreviewAudio(audioBlob);
                     };
                     
                     // Começar gravação
-                    mediaRecorder.start();
+                    mediaRecorder.start(1000); // Coletar dados a cada segundo
                     gravandoAudio = true;
                     
                     // Iniciar timer
@@ -1283,13 +1316,21 @@
                     document.getElementById('audioBtn').innerHTML = '<i class="fas fa-stop"></i>';
                     
                 } catch (error) {
-                    console.error('Erro ao acessar microfone:', error);
-                    mostrarErro('Precisamos de acesso ao microfone para gravar áudio!');
+                    console.error('❌ Erro ao acessar microfone:', error);
+                    
+                    if (error.name === 'NotAllowedError') {
+                        mostrarErro('Permissão do microfone negada. Permita o acesso nas configurações.');
+                    } else if (error.name === 'NotFoundError') {
+                        mostrarErro('Nenhum microfone encontrado no seu dispositivo.');
+                    } else {
+                        mostrarErro('Erro ao acessar microfone: ' + error.message);
+                    }
                 }
             }
 
             function pararGravacaoAudio() {
                 if (mediaRecorder && gravandoAudio) {
+                    console.log('⏹️ Parando gravação...');
                     mediaRecorder.stop();
                     gravandoAudio = false;
                     
@@ -1303,6 +1344,8 @@
             }
 
             function cancelarGravacao() {
+                console.log('❌ Cancelando gravação');
+                
                 if (mediaRecorder && gravandoAudio) {
                     mediaRecorder.stop();
                     gravandoAudio = false;
@@ -1333,8 +1376,8 @@
                     document.getElementById('audioTimer').textContent = 
                         `${minutes}:${seconds.toString().padStart(2, '0')}`;
                     
-                    // Limite de 2 minutos (opcional - você pode ajustar)
-                    if (elapsed >= 120) { // 2 minutos
+                    // Limite de 2 minutos
+                    if (elapsed >= 120) {
                         pararGravacaoAudio();
                         mostrarErro('Limite de 2 minutos atingido!');
                     }
@@ -1346,15 +1389,25 @@
                 preview.classList.remove('hidden');
                 
                 // Armazenar blob para enviar depois
-                preview.dataset.audioBlob = URL.createObjectURL(blob);
                 preview.dataset.rawBlob = blob;
+                
+                // Criar URL para preview (opcional)
+                const audioUrl = URL.createObjectURL(blob);
+                preview.dataset.audioUrl = audioUrl;
             }
 
             async function enviarAudio(blob) {
-                if (!usuarioAtual) return;
+                if (!usuarioAtual) {
+                    mostrarErro('Usuário não logado');
+                    return;
+                }
                 
                 try {
-                    // Verificar tamanho (opcional - limite de 5MB)
+                    console.log('🎤 Iniciando envio de áudio...');
+                    console.log('📊 Tamanho:', blob.size, 'bytes');
+                    console.log('📦 Tipo:', blob.type);
+                    
+                    // Verificar tamanho (limite de 5MB)
                     if (blob.size > 5 * 1024 * 1024) {
                         mostrarErro('Áudio muito grande! Máximo 5MB');
                         cancelarGravacao();
@@ -1363,37 +1416,67 @@
 
                     // Gerar nome único
                     const fileName = `audio_${Date.now()}_${usuarioAtual.id}.webm`;
+                    console.log('📁 Nome do arquivo:', fileName);
+                    
+                    // Verificar bucket
+                    const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets();
+                    if (bucketsError) {
+                        console.error('❌ Erro ao listar buckets:', bucketsError);
+                        mostrarErro('Erro ao acessar storage');
+                        return;
+                    }
+                    
+                    const bucketExists = buckets.some(b => b.name === 'mensagens-audio');
+                    if (!bucketExists) {
+                        console.error('❌ Bucket mensagens-audio não encontrado');
+                        mostrarErro('Bucket de áudio não configurado');
+                        return;
+                    }
                     
                     // Upload para Supabase Storage
+                    console.log('⬆️ Fazendo upload...');
                     const { data, error } = await supabase.storage
                         .from('mensagens-audio')
                         .upload(fileName, blob, {
-                            contentType: 'audio/webm',
-                            cacheControl: '3600'
+                            contentType: blob.type,
+                            cacheControl: '3600',
+                            upsert: false
                         });
                     
                     if (error) {
-                        console.error('Erro no upload:', error);
-                        mostrarErro('Erro ao fazer upload do áudio. Verifique se o bucket "mensagens-audio" existe.');
+                        console.error('❌ Erro no upload:', error);
+                        
+                        if (error.message.includes('duplicate')) {
+                            mostrarErro('Arquivo duplicado. Tente novamente.');
+                        } else if (error.message.includes('permission')) {
+                            mostrarErro('Sem permissão para upload. Verifique as políticas do bucket.');
+                        } else {
+                            mostrarErro('Erro ao fazer upload: ' + error.message);
+                        }
                         return;
                     }
+                    
+                    console.log('✅ Upload concluído');
                     
                     // Pegar URL pública
                     const { data: { publicUrl } } = supabase.storage
                         .from('mensagens-audio')
                         .getPublicUrl(fileName);
                     
-                    // Calcular duração aproximada
+                    console.log('🔗 URL gerada:', publicUrl);
+                    
+                    // Calcular duração
                     const duracao = Math.floor((Date.now() - startTime) / 1000);
                     
                     // Inserir mensagem no banco
+                    console.log('💾 Inserindo mensagem...');
                     const { error: insertError } = await supabase
                         .from('mensagens')
                         .insert([{
                             usuario_id: usuarioAtual.id,
                             usuario_nome: usuarioAtual.nome,
                             usuario_avatar: usuarioAtual.avatar,
-                            mensagem: '', // vazio porque é áudio
+                            mensagem: '',
                             tipo_mensagem: 'audio',
                             audio_url: publicUrl,
                             duracao_audio: duracao,
@@ -1401,21 +1484,34 @@
                         }]);
                     
                     if (insertError) {
-                        console.error('Erro ao inserir mensagem:', insertError);
-                        mostrarErro('Erro ao enviar mensagem de áudio');
+                        console.error('❌ Erro ao inserir mensagem:', insertError);
+                        
+                        if (insertError.message.includes('tipo_mensagem')) {
+                            mostrarErro('Coluna tipo_mensagem não existe. Execute o ALTER TABLE.');
+                        } else {
+                            mostrarErro('Erro ao enviar mensagem: ' + insertError.message);
+                        }
                         return;
                     }
+                    
+                    console.log('✅ Mensagem de áudio enviada!');
                     
                     // Limpar preview
                     document.getElementById('audioPreview').classList.add('hidden');
                     
+                    // Limpar URL do objeto
+                    const preview = document.getElementById('audioPreview');
+                    if (preview.dataset.audioUrl) {
+                        URL.revokeObjectURL(preview.dataset.audioUrl);
+                    }
+                    
                 } catch (error) {
-                    console.error('Erro ao enviar áudio:', error);
-                    mostrarErro('Erro ao enviar áudio. Tente novamente.');
+                    console.error('❌ Erro geral:', error);
+                    mostrarErro('Erro ao enviar áudio. Verifique o console.');
                 }
             }
 
-            // ===== SISTEMA DE LOGIN =====
+            // ===== SISTEMA DE LOGIN (mantido igual) =====
             const loginScreen = document.getElementById('loginScreen');
             const chatScreen = document.getElementById('chatScreen');
             const loginTabBtn = document.getElementById('loginTabBtn');
@@ -1425,7 +1521,6 @@
             const avatarOptions = document.querySelectorAll('.avatar-option');
             const selectedAvatar = document.getElementById('selectedAvatar');
 
-            // Gerenciar tabs
             loginTabBtn.addEventListener('click', () => {
                 loginTabBtn.classList.add('active');
                 registerTabBtn.classList.remove('active');
@@ -1440,7 +1535,6 @@
                 loginForm.classList.remove('active');
             });
 
-            // Selecionar avatar
             avatarOptions.forEach(opt => {
                 opt.addEventListener('click', () => {
                     avatarOptions.forEach(o => o.classList.remove('selected'));
@@ -1449,7 +1543,6 @@
                 });
             });
 
-            // Verificar se já está logado
             const userSalvo = sessionStorage.getItem('templario_user');
             if (userSalvo) {
                 try {
@@ -1461,7 +1554,6 @@
                 }
             }
 
-            // Função de login
             window.fazerLogin = async function() {
                 const nome = document.getElementById('loginNome').value.trim();
                 const senha = document.getElementById('loginSenha').value;
@@ -1500,7 +1592,6 @@
 
                     sessionStorage.setItem('templario_user', JSON.stringify(usuarioAtual));
 
-                    // Atualizar last_seen ao fazer login
                     await supabase
                         .from('usuarios')
                         .update({ 
@@ -1516,7 +1607,6 @@
                 }
             };
 
-            // Função de registro
             window.criarConta = async function() {
                 const nome = document.getElementById('registerNome').value.trim();
                 const senha = document.getElementById('registerSenha').value;
@@ -1584,40 +1674,26 @@
                 }
             };
 
-            // ===== FUNÇÕES DO CHAT =====
             function mostrarChat() {
                 loginScreen.classList.add('hidden');
                 chatScreen.classList.remove('hidden');
             }
 
             async function inicializarChat() {
-                // Atualizar perfil
                 document.getElementById('profileName').innerHTML = usuarioAtual.nome;
                 if (usuarioAtual.is_admin) {
                     document.getElementById('profileName').innerHTML += ' <i class="fas fa-crown" style="color: #ffb347;"></i>';
                 }
                 document.getElementById('profileAvatar').src = usuarioAtual.avatar;
 
-                // Carregar mensagens
                 await carregarMensagens();
-
-                // Configurar tempo real
                 setupRealtime();
-
-                // Carregar membros (já vai atualizar via realtime)
                 await carregarMembros();
-
-                // Configurar eventos
                 configurarEventos();
-
-                // Configurar emojis
                 configurarEmojis();
-
-                // Iniciar heartbeat (a cada 15 segundos)
                 iniciarHeartbeat();
             }
 
-            // ===== TEMPO REAL =====
             function setupRealtime() {
                 console.log('🎯 Configurando tempo real...');
                 
@@ -1649,7 +1725,6 @@
                     )
                     .subscribe();
 
-                // Escutar UPDATES na tabela usuarios para atualizar a lista em tempo real
                 membrosSubscription = supabase
                     .channel('membros')
                     .on(
@@ -1661,7 +1736,6 @@
                         },
                         (payload) => {
                             console.log('👤 Update de usuário:', payload.new);
-                            // Atualizar a lista de membros quando alguém atualizar o last_seen
                             carregarMembros();
                         }
                     )
@@ -1673,7 +1747,6 @@
                             table: 'usuarios' 
                         },
                         () => {
-                            // Novo usuário registrado
                             carregarMembros();
                         }
                     )
@@ -1681,12 +1754,10 @@
             }
 
             function iniciarHeartbeat() {
-                // Limpar intervalo anterior se existir
                 if (heartbeatInterval) {
                     clearInterval(heartbeatInterval);
                 }
                 
-                // Heartbeat a cada 15 segundos (apenas atualiza last_seen)
                 heartbeatInterval = setInterval(async () => {
                     if (usuarioAtual) {
                         await supabase
@@ -1702,7 +1773,6 @@
             }
 
             function configurarEventos() {
-                // Botão de enviar mensagem de texto
                 document.getElementById('sendBtn').addEventListener('click', enviarMensagem);
                 document.getElementById('messageInput').addEventListener('keypress', (e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
@@ -1711,7 +1781,6 @@
                     }
                 });
 
-                // Botão de áudio
                 const audioBtn = document.getElementById('audioBtn');
                 audioBtn.addEventListener('click', () => {
                     if (!gravandoAudio) {
@@ -1721,7 +1790,6 @@
                     }
                 });
 
-                // Botões do preview de áudio
                 document.getElementById('cancelAudioBtn').addEventListener('click', cancelarGravacao);
                 
                 document.getElementById('sendAudioBtn').addEventListener('click', () => {
@@ -1732,28 +1800,21 @@
                     }
                 });
 
-                // Logout
                 document.getElementById('logoutBtn').addEventListener('click', async () => {
-                    // Cancelar gravação se estiver acontecendo
                     if (gravandoAudio) {
                         cancelarGravacao();
                     }
                     
-                    // Remover heartbeat
                     if (heartbeatInterval) {
                         clearInterval(heartbeatInterval);
                         heartbeatInterval = null;
                     }
                     
-                    // Remover sessão
                     sessionStorage.removeItem('templario_user');
                     usuarioAtual = null;
-                    
-                    // Recarregar para voltar ao login
                     window.location.reload();
                 });
 
-                // Emoji picker
                 const emojiBtn = document.getElementById('emojiBtn');
                 const emojiPicker = document.getElementById('emojiPicker');
 
@@ -1948,7 +2009,6 @@
                     let onlineCount = 0;
 
                     data.forEach(user => {
-                        // Verificar se está online baseado no last_seen (menos de 30 segundos)
                         const userOnline = isOnline(user.last_seen);
                         if (userOnline) onlineCount++;
 
@@ -1981,7 +2041,6 @@
                 container.scrollTop = container.scrollHeight;
             }
 
-            // Cleanup ao sair da página
             window.addEventListener('beforeunload', () => {
                 if (gravandoAudio) {
                     cancelarGravacao();
