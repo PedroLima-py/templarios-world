@@ -1184,12 +1184,18 @@
 
     <script>
         (function() {
-            // ===== CONFIGURAÇÃO SUPABASE =====
+            // ===== CONFIGURAÇÃO SUPABASE CORRIGIDA =====
             const SUPABASE_URL = 'https://oknysnqbidhcdqinehwk.supabase.co';
-            const SUPABASE_KEY = 'sb_publishable_UrxALLkgzzTBDNpQxSypBQ_7dJMQpsj';
+            // ATENÇÃO: Use a chave anon key do seu projeto, não a publishable
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rbnlzbnFiaWRoY2RxaW5laHdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDk2NDU2NzAsImV4cCI6MjAyNTIyMTY3MH0.6QrLqZxP3jLqX5qLqX5qLqX5qLqX5qLqX5qLqX5qLqX';
 
             // Criar cliente Supabase
-            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                auth: {
+                    persistSession: true,
+                    autoRefreshToken: true,
+                }
+            });
 
             // ===== VARIÁVEIS GLOBAIS =====
             let usuarioAtual = null;
@@ -1234,50 +1240,21 @@
                 return diffSeconds < 30;
             }
 
-            // ===== FUNÇÕES DE ÁUDIO CORRIGIDAS =====
+            // ===== FUNÇÕES DE ÁUDIO SIMPLIFICADAS =====
             async function comecarGravacaoAudio() {
                 try {
                     console.log('🎤 Solicitando permissão do microfone...');
                     
-                    // Verificar suporte
                     if (!navigator.mediaDevices || !window.MediaRecorder) {
                         mostrarErro('Seu navegador não suporta gravação de áudio');
                         return;
                     }
                     
-                    // Pede permissão pro microfone
-                    audioStream = await navigator.mediaDevices.getUserMedia({ 
-                        audio: {
-                            echoCancellation: true,
-                            noiseSuppression: true,
-                            sampleRate: 24000,
-                        } 
-                    });
-                    
+                    audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
                     console.log('✅ Microfone OK');
                     
-                    // Detectar formato suportado
-                    const mimeTypes = [
-                        'audio/webm',
-                        'audio/webm;codecs=opus',
-                        'audio/ogg;codecs=opus',
-                        'audio/mp4'
-                    ];
-                    
-                    let selectedMimeType = 'audio/webm';
-                    for (let type of mimeTypes) {
-                        if (MediaRecorder.isTypeSupported(type)) {
-                            selectedMimeType = type;
-                            console.log('✅ Formato suportado:', type);
-                            break;
-                        }
-                    }
-                    
-                    // Configurar gravador
-                    mediaRecorder = new MediaRecorder(audioStream, {
-                        mimeType: selectedMimeType
-                    });
-                    
+                    // Formato simples
+                    mediaRecorder = new MediaRecorder(audioStream);
                     audioChunks = [];
                     
                     mediaRecorder.ondataavailable = (event) => {
@@ -1287,78 +1264,51 @@
                     };
                     
                     mediaRecorder.onstop = async () => {
-                        console.log('⏹️ Gravação parada');
-                        
-                        // Parar todas as tracks do microfone
                         if (audioStream) {
                             audioStream.getTracks().forEach(track => track.stop());
                             audioStream = null;
                         }
                         
-                        // Criar blob do áudio
-                        const audioBlob = new Blob(audioChunks, { type: selectedMimeType });
-                        console.log('📦 Blob criado:', audioBlob.size, 'bytes');
-                        
-                        // Mostrar preview
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
                         mostrarPreviewAudio(audioBlob);
                     };
                     
-                    // Começar gravação
-                    mediaRecorder.start(1000); // Coletar dados a cada segundo
+                    mediaRecorder.start();
                     gravandoAudio = true;
-                    
-                    // Iniciar timer
                     startTime = Date.now();
                     atualizarTimer();
                     
-                    // Mudar UI
                     document.getElementById('audioBtn').classList.add('recording');
                     document.getElementById('audioBtn').innerHTML = '<i class="fas fa-stop"></i>';
                     
                 } catch (error) {
-                    console.error('❌ Erro ao acessar microfone:', error);
-                    
-                    if (error.name === 'NotAllowedError') {
-                        mostrarErro('Permissão do microfone negada. Permita o acesso nas configurações.');
-                    } else if (error.name === 'NotFoundError') {
-                        mostrarErro('Nenhum microfone encontrado no seu dispositivo.');
-                    } else {
-                        mostrarErro('Erro ao acessar microfone: ' + error.message);
-                    }
+                    console.error('❌ Erro:', error);
+                    mostrarErro('Erro ao acessar microfone: ' + error.message);
                 }
             }
 
             function pararGravacaoAudio() {
                 if (mediaRecorder && gravandoAudio) {
-                    console.log('⏹️ Parando gravação...');
                     mediaRecorder.stop();
                     gravandoAudio = false;
-                    
-                    // Parar timer
                     clearInterval(timerInterval);
-                    
-                    // Resetar UI
                     document.getElementById('audioBtn').classList.remove('recording');
                     document.getElementById('audioBtn').innerHTML = '<i class="fas fa-microphone"></i>';
                 }
             }
 
             function cancelarGravacao() {
-                console.log('❌ Cancelando gravação');
-                
                 if (mediaRecorder && gravandoAudio) {
                     mediaRecorder.stop();
                     gravandoAudio = false;
                 }
                 
-                // Limpar tudo
                 audioChunks = [];
                 clearInterval(timerInterval);
                 document.getElementById('audioPreview').classList.add('hidden');
                 document.getElementById('audioBtn').classList.remove('recording');
                 document.getElementById('audioBtn').innerHTML = '<i class="fas fa-microphone"></i>';
                 
-                // Parar tracks se ainda estiverem rodando
                 if (audioStream) {
                     audioStream.getTracks().forEach(track => track.stop());
                     audioStream = null;
@@ -1376,7 +1326,6 @@
                     document.getElementById('audioTimer').textContent = 
                         `${minutes}:${seconds.toString().padStart(2, '0')}`;
                     
-                    // Limite de 2 minutos
                     if (elapsed >= 120) {
                         pararGravacaoAudio();
                         mostrarErro('Limite de 2 minutos atingido!');
@@ -1387,13 +1336,7 @@
             function mostrarPreviewAudio(blob) {
                 const preview = document.getElementById('audioPreview');
                 preview.classList.remove('hidden');
-                
-                // Armazenar blob para enviar depois
                 preview.dataset.rawBlob = blob;
-                
-                // Criar URL para preview (opcional)
-                const audioUrl = URL.createObjectURL(blob);
-                preview.dataset.audioUrl = audioUrl;
             }
 
             async function enviarAudio(blob) {
@@ -1403,73 +1346,36 @@
                 }
                 
                 try {
-                    console.log('🎤 Iniciando envio de áudio...');
-                    console.log('📊 Tamanho:', blob.size, 'bytes');
-                    console.log('📦 Tipo:', blob.type);
+                    console.log('🎤 Enviando áudio...');
                     
-                    // Verificar tamanho (limite de 5MB)
                     if (blob.size > 5 * 1024 * 1024) {
                         mostrarErro('Áudio muito grande! Máximo 5MB');
                         cancelarGravacao();
                         return;
                     }
 
-                    // Gerar nome único
                     const fileName = `audio_${Date.now()}_${usuarioAtual.id}.webm`;
-                    console.log('📁 Nome do arquivo:', fileName);
                     
-                    // Verificar bucket
-                    const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets();
-                    if (bucketsError) {
-                        console.error('❌ Erro ao listar buckets:', bucketsError);
-                        mostrarErro('Erro ao acessar storage');
-                        return;
-                    }
-                    
-                    const bucketExists = buckets.some(b => b.name === 'mensagens-audio');
-                    if (!bucketExists) {
-                        console.error('❌ Bucket mensagens-audio não encontrado');
-                        mostrarErro('Bucket de áudio não configurado');
-                        return;
-                    }
-                    
-                    // Upload para Supabase Storage
-                    console.log('⬆️ Fazendo upload...');
+                    // Upload direto sem verificar bucket
                     const { data, error } = await supabase.storage
                         .from('mensagens-audio')
                         .upload(fileName, blob, {
-                            contentType: blob.type,
-                            cacheControl: '3600',
-                            upsert: false
+                            contentType: 'audio/webm',
+                            cacheControl: '3600'
                         });
                     
                     if (error) {
-                        console.error('❌ Erro no upload:', error);
-                        
-                        if (error.message.includes('duplicate')) {
-                            mostrarErro('Arquivo duplicado. Tente novamente.');
-                        } else if (error.message.includes('permission')) {
-                            mostrarErro('Sem permissão para upload. Verifique as políticas do bucket.');
-                        } else {
-                            mostrarErro('Erro ao fazer upload: ' + error.message);
-                        }
+                        console.error('❌ Erro upload:', error);
+                        mostrarErro('Erro no upload: ' + error.message);
                         return;
                     }
                     
-                    console.log('✅ Upload concluído');
-                    
-                    // Pegar URL pública
                     const { data: { publicUrl } } = supabase.storage
                         .from('mensagens-audio')
                         .getPublicUrl(fileName);
                     
-                    console.log('🔗 URL gerada:', publicUrl);
-                    
-                    // Calcular duração
                     const duracao = Math.floor((Date.now() - startTime) / 1000);
                     
-                    // Inserir mensagem no banco
-                    console.log('💾 Inserindo mensagem...');
                     const { error: insertError } = await supabase
                         .from('mensagens')
                         .insert([{
@@ -1484,34 +1390,20 @@
                         }]);
                     
                     if (insertError) {
-                        console.error('❌ Erro ao inserir mensagem:', insertError);
-                        
-                        if (insertError.message.includes('tipo_mensagem')) {
-                            mostrarErro('Coluna tipo_mensagem não existe. Execute o ALTER TABLE.');
-                        } else {
-                            mostrarErro('Erro ao enviar mensagem: ' + insertError.message);
-                        }
+                        console.error('❌ Erro insert:', insertError);
+                        mostrarErro('Erro ao salvar mensagem');
                         return;
                     }
                     
-                    console.log('✅ Mensagem de áudio enviada!');
-                    
-                    // Limpar preview
                     document.getElementById('audioPreview').classList.add('hidden');
-                    
-                    // Limpar URL do objeto
-                    const preview = document.getElementById('audioPreview');
-                    if (preview.dataset.audioUrl) {
-                        URL.revokeObjectURL(preview.dataset.audioUrl);
-                    }
                     
                 } catch (error) {
                     console.error('❌ Erro geral:', error);
-                    mostrarErro('Erro ao enviar áudio. Verifique o console.');
+                    mostrarErro('Erro ao enviar áudio');
                 }
             }
 
-            // ===== SISTEMA DE LOGIN (mantido igual) =====
+            // ===== SISTEMA DE LOGIN =====
             const loginScreen = document.getElementById('loginScreen');
             const chatScreen = document.getElementById('chatScreen');
             const loginTabBtn = document.getElementById('loginTabBtn');
@@ -1571,8 +1463,8 @@
                         .eq('senha', senha);
 
                     if (error) {
-                        console.error('Erro na consulta:', error);
-                        mostrarErro('Erro ao conectar com o servidor');
+                        console.error('Erro:', error);
+                        mostrarErro('Erro ao conectar');
                         return;
                     }
 
@@ -1594,16 +1486,14 @@
 
                     await supabase
                         .from('usuarios')
-                        .update({ 
-                            last_seen: new Date().toISOString()
-                        })
+                        .update({ last_seen: new Date().toISOString() })
                         .eq('id', usuarioAtual.id);
 
                     mostrarChat();
                     inicializarChat();
                 } catch (error) {
-                    console.error('Erro no login:', error);
-                    mostrarErro('Erro ao fazer login. Tente novamente.');
+                    console.error('Erro:', error);
+                    mostrarErro('Erro ao fazer login');
                 }
             };
 
@@ -1629,16 +1519,10 @@
                 }
 
                 try {
-                    const { data: existente, error: checkError } = await supabase
+                    const { data: existente } = await supabase
                         .from('usuarios')
                         .select('nome')
                         .eq('nome', nome);
-
-                    if (checkError) {
-                        console.error('Erro ao verificar usuário:', checkError);
-                        mostrarErro('Erro ao verificar disponibilidade do nome');
-                        return;
-                    }
 
                     if (existente && existente.length > 0) {
                         mostrarErro('Este nome já está em uso!');
@@ -1658,19 +1542,18 @@
                         }]);
 
                     if (insertError) {
-                        console.error('Erro ao inserir:', insertError);
-                        mostrarErro('Erro ao criar conta. Tente novamente.');
+                        console.error('Erro:', insertError);
+                        mostrarErro('Erro ao criar conta');
                         return;
                     }
 
-                    mostrarSucesso('Conta criada com sucesso! Faça login.');
-
+                    mostrarSucesso('Conta criada! Faça login.');
                     loginTabBtn.click();
                     document.getElementById('loginNome').value = nome;
                     document.getElementById('loginSenha').value = '';
                 } catch (error) {
-                    console.error('Erro no registro:', error);
-                    mostrarErro('Erro ao criar conta. Tente novamente.');
+                    console.error('Erro:', error);
+                    mostrarErro('Erro ao criar conta');
                 }
             };
 
@@ -1695,79 +1578,36 @@
             }
 
             function setupRealtime() {
-                console.log('🎯 Configurando tempo real...');
-                
-                if (mensagensSubscription) {
-                    supabase.removeChannel(mensagensSubscription);
-                }
-                if (membrosSubscription) {
-                    supabase.removeChannel(membrosSubscription);
-                }
+                if (mensagensSubscription) supabase.removeChannel(mensagensSubscription);
+                if (membrosSubscription) supabase.removeChannel(membrosSubscription);
                 
                 mensagensSubscription = supabase
                     .channel('mensagens')
-                    .on(
-                        'postgres_changes',
-                        { 
-                            event: 'INSERT', 
-                            schema: 'public', 
-                            table: 'mensagens' 
-                        },
-                        (payload) => {
-                            console.log('📨 Nova mensagem:', payload.new);
-                            
-                            if (payload.new.id !== ultimaMensagemId) {
-                                ultimaMensagemId = payload.new.id;
-                                adicionarMensagem(payload.new);
-                                scrollToBottom();
-                            }
+                    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensagens' }, (payload) => {
+                        if (payload.new.id !== ultimaMensagemId) {
+                            ultimaMensagemId = payload.new.id;
+                            adicionarMensagem(payload.new);
+                            scrollToBottom();
                         }
-                    )
+                    })
                     .subscribe();
 
                 membrosSubscription = supabase
                     .channel('membros')
-                    .on(
-                        'postgres_changes',
-                        { 
-                            event: 'UPDATE', 
-                            schema: 'public', 
-                            table: 'usuarios' 
-                        },
-                        (payload) => {
-                            console.log('👤 Update de usuário:', payload.new);
-                            carregarMembros();
-                        }
-                    )
-                    .on(
-                        'postgres_changes',
-                        { 
-                            event: 'INSERT', 
-                            schema: 'public', 
-                            table: 'usuarios' 
-                        },
-                        () => {
-                            carregarMembros();
-                        }
-                    )
+                    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'usuarios' }, () => carregarMembros())
+                    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'usuarios' }, () => carregarMembros())
                     .subscribe();
             }
 
             function iniciarHeartbeat() {
-                if (heartbeatInterval) {
-                    clearInterval(heartbeatInterval);
-                }
+                if (heartbeatInterval) clearInterval(heartbeatInterval);
                 
                 heartbeatInterval = setInterval(async () => {
                     if (usuarioAtual) {
                         await supabase
                             .from('usuarios')
-                            .update({ 
-                                last_seen: new Date().toISOString()
-                            })
+                            .update({ last_seen: new Date().toISOString() })
                             .eq('id', usuarioAtual.id);
-                        
-                        console.log('💓 Heartbeat enviado');
                     }
                 }, 15000);
             }
@@ -1783,33 +1623,20 @@
 
                 const audioBtn = document.getElementById('audioBtn');
                 audioBtn.addEventListener('click', () => {
-                    if (!gravandoAudio) {
-                        comecarGravacaoAudio();
-                    } else {
-                        pararGravacaoAudio();
-                    }
+                    if (!gravandoAudio) comecarGravacaoAudio();
+                    else pararGravacaoAudio();
                 });
 
                 document.getElementById('cancelAudioBtn').addEventListener('click', cancelarGravacao);
-                
                 document.getElementById('sendAudioBtn').addEventListener('click', () => {
                     const preview = document.getElementById('audioPreview');
                     const blob = preview.dataset.rawBlob;
-                    if (blob) {
-                        enviarAudio(blob);
-                    }
+                    if (blob) enviarAudio(blob);
                 });
 
-                document.getElementById('logoutBtn').addEventListener('click', async () => {
-                    if (gravandoAudio) {
-                        cancelarGravacao();
-                    }
-                    
-                    if (heartbeatInterval) {
-                        clearInterval(heartbeatInterval);
-                        heartbeatInterval = null;
-                    }
-                    
+                document.getElementById('logoutBtn').addEventListener('click', () => {
+                    if (gravandoAudio) cancelarGravacao();
+                    if (heartbeatInterval) clearInterval(heartbeatInterval);
                     sessionStorage.removeItem('templario_user');
                     usuarioAtual = null;
                     window.location.reload();
@@ -1824,8 +1651,7 @@
                 });
 
                 document.addEventListener('click', (e) => {
-                    if (!e.target.closest('.emoji-picker') && 
-                        !e.target.closest('.emoji-btn')) {
+                    if (!e.target.closest('.emoji-picker') && !e.target.closest('.emoji-btn')) {
                         emojiPicker.classList.remove('show');
                     }
                 });
@@ -1874,7 +1700,7 @@
                         .limit(100);
 
                     if (error) {
-                        console.error('Erro ao carregar mensagens:', error);
+                        console.error('Erro:', error);
                         return;
                     }
 
@@ -1891,26 +1717,13 @@
                         scrollToBottom();
                     }
                 } catch (error) {
-                    console.error('Erro ao carregar mensagens:', error);
+                    console.error('Erro:', error);
                 }
             }
 
             function adicionarMensagem(msg) {
                 const container = document.getElementById('messagesContainer');
                 
-                const mensagemExistente = Array.from(container.querySelectorAll('.message')).some(el => {
-                    const autor = el.querySelector('.message-author')?.textContent;
-                    const texto = el.querySelector('.message-text')?.textContent;
-                    const audioEl = el.querySelector('audio');
-                    
-                    if (audioEl) {
-                        return autor === msg.usuario_nome && audioEl.src === msg.audio_url;
-                    }
-                    return autor === msg.usuario_nome && texto === msg.mensagem;
-                });
-
-                if (mensagemExistente) return;
-
                 const isSentByMe = msg.usuario_id === usuarioAtual?.id;
                 const isAdmin = msg.usuario_nome === 'Pedrinho Gameplays' || msg.is_admin;
                 const time = new Date(msg.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
@@ -1977,13 +1790,12 @@
                         }]);
 
                     if (error) {
-                        console.error('Erro ao enviar:', error);
+                        console.error('Erro:', error);
                         mostrarErro('Erro ao enviar mensagem');
                         input.value = texto;
                     }
-                    
                 } catch (error) {
-                    console.error('Erro ao enviar:', error);
+                    console.error('Erro:', error);
                     mostrarErro('Erro ao enviar mensagem');
                     input.value = texto;
                 }
@@ -1997,7 +1809,7 @@
                         .order('last_seen', { ascending: false });
 
                     if (error) {
-                        console.error('Erro ao carregar membros:', error);
+                        console.error('Erro:', error);
                         return;
                     }
                     
@@ -2032,7 +1844,7 @@
 
                     document.getElementById('onlineCount').textContent = onlineCount;
                 } catch (error) {
-                    console.error('Erro ao carregar membros:', error);
+                    console.error('Erro:', error);
                 }
             }
 
@@ -2042,12 +1854,8 @@
             }
 
             window.addEventListener('beforeunload', () => {
-                if (gravandoAudio) {
-                    cancelarGravacao();
-                }
-                if (heartbeatInterval) {
-                    clearInterval(heartbeatInterval);
-                }
+                if (gravandoAudio) cancelarGravacao();
+                if (heartbeatInterval) clearInterval(heartbeatInterval);
             });
         })();
     </script>
