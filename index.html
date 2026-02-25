@@ -1186,8 +1186,7 @@
         (function() {
             // ===== CONFIGURAÇÃO SUPABASE CORRIGIDA =====
             const SUPABASE_URL = 'https://oknysnqbidhcdqinehwk.supabase.co';
-            // ATENÇÃO: Use a chave anon key do seu projeto, não a publishable
-            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rbnlzbnFiaWRoY2RxaW5laHdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDk2NDU2NzAsImV4cCI6MjAyNTIyMTY3MH0.6QrLqZxP3jLqX5qLqX5qLqX5qLqX5qLqX5qLqX5qLqX';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rbnlzbnFiaWRoY2RxaW5laHdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4Njc4NTAsImV4cCI6MjA4NzQ0Mzg1MH0.pH4tDtdee4hHJwYbASYrvg1wl_jBRD-OmMj78g4twvA';
 
             // Criar cliente Supabase
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -1240,7 +1239,7 @@
                 return diffSeconds < 30;
             }
 
-            // ===== FUNÇÕES DE ÁUDIO SIMPLIFICADAS =====
+            // ===== FUNÇÕES DE ÁUDIO =====
             async function comecarGravacaoAudio() {
                 try {
                     console.log('🎤 Solicitando permissão do microfone...');
@@ -1253,7 +1252,6 @@
                     audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
                     console.log('✅ Microfone OK');
                     
-                    // Formato simples
                     mediaRecorder = new MediaRecorder(audioStream);
                     audioChunks = [];
                     
@@ -1270,6 +1268,7 @@
                         }
                         
                         const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        console.log('📦 Blob criado:', audioBlob.size, 'bytes');
                         mostrarPreviewAudio(audioBlob);
                     };
                     
@@ -1282,8 +1281,13 @@
                     document.getElementById('audioBtn').innerHTML = '<i class="fas fa-stop"></i>';
                     
                 } catch (error) {
-                    console.error('❌ Erro:', error);
-                    mostrarErro('Erro ao acessar microfone: ' + error.message);
+                    console.error('❌ Erro ao acessar microfone:', error);
+                    
+                    if (error.name === 'NotAllowedError') {
+                        mostrarErro('Permissão do microfone negada. Permita o acesso nas configurações.');
+                    } else {
+                        mostrarErro('Erro ao acessar microfone: ' + error.message);
+                    }
                 }
             }
 
@@ -1355,8 +1359,8 @@
                     }
 
                     const fileName = `audio_${Date.now()}_${usuarioAtual.id}.webm`;
+                    console.log('📁 Nome do arquivo:', fileName);
                     
-                    // Upload direto sem verificar bucket
                     const { data, error } = await supabase.storage
                         .from('mensagens-audio')
                         .upload(fileName, blob, {
@@ -1370,9 +1374,13 @@
                         return;
                     }
                     
+                    console.log('✅ Upload concluído');
+                    
                     const { data: { publicUrl } } = supabase.storage
                         .from('mensagens-audio')
                         .getPublicUrl(fileName);
+                    
+                    console.log('🔗 URL:', publicUrl);
                     
                     const duracao = Math.floor((Date.now() - startTime) / 1000);
                     
@@ -1391,15 +1399,16 @@
                     
                     if (insertError) {
                         console.error('❌ Erro insert:', insertError);
-                        mostrarErro('Erro ao salvar mensagem');
+                        mostrarErro('Erro ao salvar mensagem: ' + insertError.message);
                         return;
                     }
                     
+                    console.log('✅ Mensagem de áudio enviada!');
                     document.getElementById('audioPreview').classList.add('hidden');
                     
                 } catch (error) {
                     console.error('❌ Erro geral:', error);
-                    mostrarErro('Erro ao enviar áudio');
+                    mostrarErro('Erro ao enviar áudio: ' + error.message);
                 }
             }
 
@@ -1463,8 +1472,8 @@
                         .eq('senha', senha);
 
                     if (error) {
-                        console.error('Erro:', error);
-                        mostrarErro('Erro ao conectar');
+                        console.error('Erro na consulta:', error);
+                        mostrarErro('Erro ao conectar com o servidor');
                         return;
                     }
 
@@ -1486,14 +1495,16 @@
 
                     await supabase
                         .from('usuarios')
-                        .update({ last_seen: new Date().toISOString() })
+                        .update({ 
+                            last_seen: new Date().toISOString()
+                        })
                         .eq('id', usuarioAtual.id);
 
                     mostrarChat();
                     inicializarChat();
                 } catch (error) {
-                    console.error('Erro:', error);
-                    mostrarErro('Erro ao fazer login');
+                    console.error('Erro no login:', error);
+                    mostrarErro('Erro ao fazer login. Tente novamente.');
                 }
             };
 
@@ -1519,10 +1530,16 @@
                 }
 
                 try {
-                    const { data: existente } = await supabase
+                    const { data: existente, error: checkError } = await supabase
                         .from('usuarios')
                         .select('nome')
                         .eq('nome', nome);
+
+                    if (checkError) {
+                        console.error('Erro ao verificar usuário:', checkError);
+                        mostrarErro('Erro ao verificar disponibilidade do nome');
+                        return;
+                    }
 
                     if (existente && existente.length > 0) {
                         mostrarErro('Este nome já está em uso!');
@@ -1542,18 +1559,19 @@
                         }]);
 
                     if (insertError) {
-                        console.error('Erro:', insertError);
-                        mostrarErro('Erro ao criar conta');
+                        console.error('Erro ao inserir:', insertError);
+                        mostrarErro('Erro ao criar conta. Tente novamente.');
                         return;
                     }
 
-                    mostrarSucesso('Conta criada! Faça login.');
+                    mostrarSucesso('Conta criada com sucesso! Faça login.');
+
                     loginTabBtn.click();
                     document.getElementById('loginNome').value = nome;
                     document.getElementById('loginSenha').value = '';
                 } catch (error) {
-                    console.error('Erro:', error);
-                    mostrarErro('Erro ao criar conta');
+                    console.error('Erro no registro:', error);
+                    mostrarErro('Erro ao criar conta. Tente novamente.');
                 }
             };
 
@@ -1578,36 +1596,79 @@
             }
 
             function setupRealtime() {
-                if (mensagensSubscription) supabase.removeChannel(mensagensSubscription);
-                if (membrosSubscription) supabase.removeChannel(membrosSubscription);
+                console.log('🎯 Configurando tempo real...');
+                
+                if (mensagensSubscription) {
+                    supabase.removeChannel(mensagensSubscription);
+                }
+                if (membrosSubscription) {
+                    supabase.removeChannel(membrosSubscription);
+                }
                 
                 mensagensSubscription = supabase
                     .channel('mensagens')
-                    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensagens' }, (payload) => {
-                        if (payload.new.id !== ultimaMensagemId) {
-                            ultimaMensagemId = payload.new.id;
-                            adicionarMensagem(payload.new);
-                            scrollToBottom();
+                    .on(
+                        'postgres_changes',
+                        { 
+                            event: 'INSERT', 
+                            schema: 'public', 
+                            table: 'mensagens' 
+                        },
+                        (payload) => {
+                            console.log('📨 Nova mensagem:', payload.new);
+                            
+                            if (payload.new.id !== ultimaMensagemId) {
+                                ultimaMensagemId = payload.new.id;
+                                adicionarMensagem(payload.new);
+                                scrollToBottom();
+                            }
                         }
-                    })
+                    )
                     .subscribe();
 
                 membrosSubscription = supabase
                     .channel('membros')
-                    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'usuarios' }, () => carregarMembros())
-                    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'usuarios' }, () => carregarMembros())
+                    .on(
+                        'postgres_changes',
+                        { 
+                            event: 'UPDATE', 
+                            schema: 'public', 
+                            table: 'usuarios' 
+                        },
+                        (payload) => {
+                            console.log('👤 Update de usuário:', payload.new);
+                            carregarMembros();
+                        }
+                    )
+                    .on(
+                        'postgres_changes',
+                        { 
+                            event: 'INSERT', 
+                            schema: 'public', 
+                            table: 'usuarios' 
+                        },
+                        () => {
+                            carregarMembros();
+                        }
+                    )
                     .subscribe();
             }
 
             function iniciarHeartbeat() {
-                if (heartbeatInterval) clearInterval(heartbeatInterval);
+                if (heartbeatInterval) {
+                    clearInterval(heartbeatInterval);
+                }
                 
                 heartbeatInterval = setInterval(async () => {
                     if (usuarioAtual) {
                         await supabase
                             .from('usuarios')
-                            .update({ last_seen: new Date().toISOString() })
+                            .update({ 
+                                last_seen: new Date().toISOString()
+                            })
                             .eq('id', usuarioAtual.id);
+                        
+                        console.log('💓 Heartbeat enviado');
                     }
                 }, 15000);
             }
@@ -1623,20 +1684,33 @@
 
                 const audioBtn = document.getElementById('audioBtn');
                 audioBtn.addEventListener('click', () => {
-                    if (!gravandoAudio) comecarGravacaoAudio();
-                    else pararGravacaoAudio();
+                    if (!gravandoAudio) {
+                        comecarGravacaoAudio();
+                    } else {
+                        pararGravacaoAudio();
+                    }
                 });
 
                 document.getElementById('cancelAudioBtn').addEventListener('click', cancelarGravacao);
+                
                 document.getElementById('sendAudioBtn').addEventListener('click', () => {
                     const preview = document.getElementById('audioPreview');
                     const blob = preview.dataset.rawBlob;
-                    if (blob) enviarAudio(blob);
+                    if (blob) {
+                        enviarAudio(blob);
+                    }
                 });
 
-                document.getElementById('logoutBtn').addEventListener('click', () => {
-                    if (gravandoAudio) cancelarGravacao();
-                    if (heartbeatInterval) clearInterval(heartbeatInterval);
+                document.getElementById('logoutBtn').addEventListener('click', async () => {
+                    if (gravandoAudio) {
+                        cancelarGravacao();
+                    }
+                    
+                    if (heartbeatInterval) {
+                        clearInterval(heartbeatInterval);
+                        heartbeatInterval = null;
+                    }
+                    
                     sessionStorage.removeItem('templario_user');
                     usuarioAtual = null;
                     window.location.reload();
@@ -1651,7 +1725,8 @@
                 });
 
                 document.addEventListener('click', (e) => {
-                    if (!e.target.closest('.emoji-picker') && !e.target.closest('.emoji-btn')) {
+                    if (!e.target.closest('.emoji-picker') && 
+                        !e.target.closest('.emoji-btn')) {
                         emojiPicker.classList.remove('show');
                     }
                 });
@@ -1700,7 +1775,7 @@
                         .limit(100);
 
                     if (error) {
-                        console.error('Erro:', error);
+                        console.error('Erro ao carregar mensagens:', error);
                         return;
                     }
 
@@ -1717,7 +1792,7 @@
                         scrollToBottom();
                     }
                 } catch (error) {
-                    console.error('Erro:', error);
+                    console.error('Erro ao carregar mensagens:', error);
                 }
             }
 
@@ -1790,12 +1865,13 @@
                         }]);
 
                     if (error) {
-                        console.error('Erro:', error);
+                        console.error('Erro ao enviar:', error);
                         mostrarErro('Erro ao enviar mensagem');
                         input.value = texto;
                     }
+                    
                 } catch (error) {
-                    console.error('Erro:', error);
+                    console.error('Erro ao enviar:', error);
                     mostrarErro('Erro ao enviar mensagem');
                     input.value = texto;
                 }
@@ -1809,7 +1885,7 @@
                         .order('last_seen', { ascending: false });
 
                     if (error) {
-                        console.error('Erro:', error);
+                        console.error('Erro ao carregar membros:', error);
                         return;
                     }
                     
@@ -1844,7 +1920,7 @@
 
                     document.getElementById('onlineCount').textContent = onlineCount;
                 } catch (error) {
-                    console.error('Erro:', error);
+                    console.error('Erro ao carregar membros:', error);
                 }
             }
 
@@ -1854,8 +1930,12 @@
             }
 
             window.addEventListener('beforeunload', () => {
-                if (gravandoAudio) cancelarGravacao();
-                if (heartbeatInterval) clearInterval(heartbeatInterval);
+                if (gravandoAudio) {
+                    cancelarGravacao();
+                }
+                if (heartbeatInterval) {
+                    clearInterval(heartbeatInterval);
+                }
             });
         })();
     </script>
